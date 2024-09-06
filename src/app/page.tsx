@@ -72,7 +72,9 @@ export default function Home() {
               // const user = await ramperSignIn();
               // console.log("🩲 🩲 => ; => user:", user)
               // const mnemonic = user?.mnemonic
-
+              setTimeout(() => {
+                window.Telegram.WebApp.close()
+              }, 1000)
             }
           } catch (error) {
             console.debug('🚀 ~ useEffectOnce ~ error:', error)
