@@ -56,5 +56,6 @@
   },
   "resolutions": {
     "shamir-bip39": "file:./packages/shamir-bip39-master"
-  }
+  },
+  "packageManager": "yarn@4.2.2"
 }

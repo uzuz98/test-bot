@@ -5,10 +5,25 @@ import { getAuth, signInWithCustomToken } from 'firebase/auth';
 import { ramperSignIn } from "@/services/lib";
 import axios from "axios";
 
-export default function Home() {
-  const [messageList, setMessageList] = useState([])
-  console.log("🩲 🩲 => Home => messageList:", messageList)
+const REPLACE_RULES = [
+  ['.', '%2E'],
+  ['-', '%2D'],
+  ['_', '%5F'],
+  ['/', '%2F'],
+  ['&', '-'],
+  ['=', '__'],
+  ['%', '--']
+]
 
+export const decodeTelegramUrlParameters = (parameters: string): string => {
+  return REPLACE_RULES
+    .reverse()
+    .reduce((prev, replaceRule) => {
+      return prev.replaceAll(replaceRule[1], replaceRule[0])
+    }, parameters)
+}
+
+export default function Home() {
   const testTelegram = () => {
 
     // axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
@@ -29,6 +44,12 @@ export default function Home() {
       const data = Object.fromEntries(params.entries())
       console.log("🩲 🩲 => testTelegram => data:", data)
       const user = data.user
+      const startParams = data.start_param
+      console.log("🩲 🩲 => testTelegram => startParams:", startParams)
+      if(startParams) {
+        console.log("🩲 🩲 => testTelegram => startParams:", startParams)
+        console.log('url', decodeTelegramUrlParameters(startParams))
+      }
       if (data) {
         ;(async () => {
           try {
@@ -43,15 +64,15 @@ export default function Home() {
             if (response.result) {
               const data = response.result
               console.log("🩲 🩲 => ; => data:", data)
-              const auth = getAuth()
-              await signInWithCustomToken(auth, data.customToken)
-              const user = await ramperSignIn();
-              console.log("🩲 🩲 => ; => user:", user)
-              const mnemonic = user?.mnemonic
-
+              // const auth = getAuth()
+              // await signInWithCustomToken(auth, data.customToken)
               axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
-                mnemonic
+                mnemonic: data.customToken
               })
+              // const user = await ramperSignIn();
+              // console.log("🩲 🩲 => ; => user:", user)
+              // const mnemonic = user?.mnemonic
+
             }
           } catch (error) {
             console.debug('🚀 ~ useEffectOnce ~ error:', error)
@@ -60,23 +81,6 @@ export default function Home() {
       }
     }
   }
-
-  useEffect(() => {
-    // const eventSource = new EventSource('http://localhost:3001/api/sse')
-
-    // eventSource.onmessage = (event) => {
-    //   console.log("🩲 🩲 => message:", event)
-    // }
-
-    // eventSource.onopen = (event) => {
-    //   console.log("🩲 🩲 => open:", event)
-    // }
-
-    // eventSource.onerror = (event) => {
-    //   console.log("🩲 🩲 => error:", event)
-    // }
-
-  }, [])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
