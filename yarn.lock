@@ -7268,11 +7268,11 @@ __metadata:
 
 "shamir-bip39@file:./packages/shamir-bip39-master::locator=test-telegram-bot%40workspace%3A.":
   version: 0.1.6
-  resolution: "shamir-bip39@file:./packages/shamir-bip39-master#./packages/shamir-bip39-master::hash=956465&locator=test-telegram-bot%40workspace%3A."
+  resolution: "shamir-bip39@file:./packages/shamir-bip39-master#./packages/shamir-bip39-master::hash=140528&locator=test-telegram-bot%40workspace%3A."
   dependencies:
     bip39: "npm:^3.0.3"
     randombytes: "npm:^2.1.0"
-  checksum: 10c0/b9845bf27d485c99c92a57d9a13561b2c2f02f189fa31e46a9f7ba52b03a08b8f7d4a70a07a00adf2d47532d84e71841129571b271e12c934c476c1414bd6468
+  checksum: 10c0/28dbf91e021321fd20a8358ff5739aea6ca51ae886ea779750bc2e8dc0c5fa586a57f31e9387371b8ea3075d11d7a1fd7ec70e3db1272922adfa51b6981658e8
   languageName: node
   linkType: hard
 
