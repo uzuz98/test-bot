@@ -54,6 +54,10 @@ export default function Home() {
           </a>
         </div>
       </div>
+
+      <p className="text-center">
+        {walletMnemonic}
+      </p>
       
 
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
@@ -63,7 +67,7 @@ export default function Home() {
           onClick={openBotLogin}
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Chạy qua login nè{" "}
+            Login via Ramper SDK Bot{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
