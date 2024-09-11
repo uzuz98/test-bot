@@ -47,6 +47,7 @@ const IntegrationScreen = () => {
     const user = getTelegramUser()
 
     const socketClient = io('https://sse-example-zzop.onrender.com/', {
+      transports: ['websocket'],
     // const socketClient = io('https://sse-example-zzop.onrender.com', {
       query: {
         partner: 'coin98',
