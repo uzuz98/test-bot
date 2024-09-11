@@ -180,12 +180,12 @@ const IntegrationScreen = () => {
         <p>{address}</p>
       </div>
 
-      <div onClick={handleConnect} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+      <div onClick={handleConnect} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
         Connect
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full">
-        <div onClick={handleGetEncryptionKey} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleGetEncryptionKey} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Get Encryption Key
         </div>
         <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
@@ -196,16 +196,16 @@ const IntegrationScreen = () => {
         <input
           value={value}
           onChange={e => setValue(e.target.value)}
-          className="rounded-sm"
+          className="rounded-sm w-full px-2 py-4"
           placeholder="Message to encrypt"
         />
         <div
           onClick={handleEncryptKey}
-          className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center"
+          className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center"
         >
           Encrypt
         </div>
-        <div onClick={handleDecryptKey} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleDecryptKey} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Decrypt
         </div>
 
@@ -222,7 +222,7 @@ const IntegrationScreen = () => {
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full break-all">
-        <div onClick={handlePersonalSign} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handlePersonalSign} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Personal sign
         </div>
 
@@ -231,7 +231,7 @@ const IntegrationScreen = () => {
           <p className="flex-1">{personalSignMsg}</p>
         </div>
 
-        <div onClick={handleSignTypedDataV1} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleSignTypedDataV1} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Sign Typed Data
         </div>
 
@@ -242,7 +242,7 @@ const IntegrationScreen = () => {
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full break-all">
-        <div onClick={handleSendTransaction} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleSendTransaction} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Send Transaction
         </div>
 
