@@ -79,7 +79,7 @@ export default function Home() {
                 transports: ['websocket'],
                 query: {
                   partner: 'coin98',
-                  id: user?.id
+                  id: JSON.parse(user || '{}').id
                 }
               })
 
