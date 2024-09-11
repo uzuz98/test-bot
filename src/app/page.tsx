@@ -25,13 +25,12 @@ export const decodeTelegramUrlParameters = (parameters: string): string => {
 }
 
 export default function Home() {
-  const testTelegram = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  console.log("🩲 🩲 => Home => isLoading:", isLoading)
 
-    // axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
-    //   mnemonic: '5 testset'
-    // })
-    // return
+  const testTelegram = () => {
     if (typeof window !== 'undefined') {
+      setIsLoading(true)
       if (!window.Telegram || !window.Telegram.WebApp) {
         return
       }
@@ -44,16 +43,10 @@ export default function Home() {
       console.log("🩲 🩲 => testTelegram => data:", data)
       const user = params.get('user')
       const startParams = data.start_param
-      console.log("🩲 🩲 => testTelegram => startParams:", startParams)
       if(startParams) {
         try {
-        console.log("🩲 🩲 => testTelegram => startParams:", startParams)
-        console.log('url', decodeTelegramUrlParameters(startParams))
         const urlParams = new URLSearchParams(startParams)
-        console.log("🩲 🩲 => testTelegram => urlParams:", urlParams)
         const data = Object.fromEntries(urlParams.entries())
-        console.log("🩲 🩲 => testTelegram => data:", data)
-          
       } catch (error) {
         
       }
@@ -92,9 +85,9 @@ export default function Home() {
               // const user = await ramperSignIn();
               // console.log("🩲 🩲 => ; => user:", user)
               // const mnemonic = user?.mnemonic
-              // setTimeout(() => {
-              //   window.Telegram.WebApp.close()
-              // }, 1000)
+              setTimeout(() => {
+                window.Telegram.WebApp.close()
+              }, 1000)
             }
           } catch (error) {
             console.debug('🚀 ~ useEffectOnce ~ error:', error)
@@ -130,14 +123,20 @@ export default function Home() {
       <div className="mb-32 grid text-center ">
         <button
           onClick={testTelegram}
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          className="group rounded-lg border border-gray-300 border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Get Wallet{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
+          {isLoading ? (
+            <h2 className="animate-spin h-10 w-10 mr-3 text-black" >
+              Loading...
+            </h2>
+          ): (
+            <h2 className="mb-3 text-2xl font-semibold">
+              Get Wallet{" "}
+              <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                -&gt;
+              </span>
+            </h2>
+          )}
         </button>
 
       </div>
