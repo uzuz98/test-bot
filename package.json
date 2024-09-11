@@ -16,9 +16,11 @@
     "@ethersproject/hdnode": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
     "@fxts/core": "^1.0.1",
+    "@metamask/eth-sig-util": "^7.0.3",
     "@tonconnect/ui-react": "^2.0.9",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash": "^4.17.7",
+    "@types/socket.io-client": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
     "axios": "^1.7.5",
@@ -39,6 +41,7 @@
     "randombytes": "^2.1.0",
     "react": "^18",
     "react-dom": "^18",
+    "socket.io-client": "^4.7.5",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

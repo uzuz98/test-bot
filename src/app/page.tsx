@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getAuth, signInWithCustomToken } from 'firebase/auth';
 import { ramperSignIn } from "@/services/lib";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 const REPLACE_RULES = [
   ['.', '%2E'],
@@ -31,8 +32,6 @@ export default function Home() {
     // })
     // return
     if (typeof window !== 'undefined') {
-      // window.Telegram.WebApp.openInvoice('https://walletbot.me/scw/tc/connect')
-
       if (!window.Telegram || !window.Telegram.WebApp) {
         return
       }
@@ -43,12 +42,22 @@ export default function Home() {
       const params = new URLSearchParams(uri)
       const data = Object.fromEntries(params.entries())
       console.log("🩲 🩲 => testTelegram => data:", data)
-      const user = data.user
+      const user = params.get('user')
       const startParams = data.start_param
       console.log("🩲 🩲 => testTelegram => startParams:", startParams)
       if(startParams) {
+        try {
         console.log("🩲 🩲 => testTelegram => startParams:", startParams)
         console.log('url', decodeTelegramUrlParameters(startParams))
+        const urlParams = new URLSearchParams(startParams)
+        console.log("🩲 🩲 => testTelegram => urlParams:", urlParams)
+        const data = Object.fromEntries(urlParams.entries())
+        console.log("🩲 🩲 => testTelegram => data:", data)
+          
+      } catch (error) {
+        
+      }
+
       }
       if (data) {
         ;(async () => {
@@ -66,9 +75,19 @@ export default function Home() {
               console.log("🩲 🩲 => ; => data:", data)
               // const auth = getAuth()
               // await signInWithCustomToken(auth, data.customToken)
-              axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
-                mnemonic: data.customToken
+              const socketClient = io('https://sse-example-zzop.onrender.com/', {
+                query: {
+                  partner: 'coin98',
+                  id: user?.id
+                }
               })
+
+              socketClient.emit('sdk-login-telegram', {
+                customToken: data.customToken
+              })
+              // axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
+              //   mnemonic: data.customToken
+              // })
               // const user = await ramperSignIn();
               // console.log("🩲 🩲 => ; => user:", user)
               // const mnemonic = user?.mnemonic
