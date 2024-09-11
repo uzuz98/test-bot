@@ -215,9 +215,9 @@ const IntegrationScreen = () => {
           </p>
           <p className="flex-1">{cipherText}</p>
         </div>
-        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start">
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
           Cleartext:
-          <p>{clearText}</p>
+          <p className="flex-1">{clearText}</p>
         </div>
       </div>
 
@@ -226,7 +226,7 @@ const IntegrationScreen = () => {
           Personal sign
         </div>
 
-        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start">
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
           Result:
           <p className="flex-1">{personalSignMsg}</p>
         </div>
@@ -235,7 +235,7 @@ const IntegrationScreen = () => {
           Sign Typed Data
         </div>
 
-        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start -breakall">
           Result:
           <p className="flex-1">{signTypedData}</p>
         </div>
@@ -246,7 +246,7 @@ const IntegrationScreen = () => {
           Send Transaction
         </div>
 
-        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start">
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
           Result:
           <p className="flex-1">{txsHash}</p>
         </div>
