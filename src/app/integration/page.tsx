@@ -173,7 +173,7 @@ const IntegrationScreen = () => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-y-4 p-24 text-center">
+    <div className="flex flex-col items-center gap-y-4 p-4 text-center">
       <h1>Integration Screen</h1>
       <div className="bg-gray-500 gap-x-2 w-80 text-white p-4 rounded-xl break-all">
         <p>Your address: </p>
@@ -188,9 +188,9 @@ const IntegrationScreen = () => {
         <div onClick={handleGetEncryptionKey} className="cursor-pointer border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
           Get Encryption Key
         </div>
-        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start">
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
           Encryption key:
-          <p>{encryptionKey}</p>
+          <p className="flex-1">{encryptionKey}</p>
         </div>
 
         <input
