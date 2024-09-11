@@ -42,8 +42,11 @@ const IntegrationScreen = () => {
         })
       }
     })
+    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
+    const startapp = 'coin98'
+    url.searchParams.append('partner', startapp)
 
-    window.Telegram.WebApp.openTelegramLink('https://t.me/uzuz_send_message_bot/integration_app?partner=coin98')
+    window.Telegram.WebApp.openTelegramLink(url.toString())
     // ioClient.current?.emit('')
     // window.open('http://localhost:8000/tabs/integration.html', "_blank")
   }
