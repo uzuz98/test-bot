@@ -5,6 +5,30 @@ import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
 
 type FuncHandleOpenGateWay = <T = any> (message: any, callback: (data: T) => void) => void
+interface TelegramUser{
+  id: number
+  first_name: string
+  last_name: string
+  username: string
+  language_code: string
+  allows_write_to_pm: boolean
+}
+
+
+const getTelegramUser = (): Partial<TelegramUser> => {
+  try {
+    const searchData = new URLSearchParams(window.Telegram?.WebApp?.initData)
+    const user = searchData.get('user')
+
+    if (!user) {
+      throw Error('not found')
+    }
+    return JSON.parse(user)
+  } catch (e) {
+    // Default user for testing on browser
+    return {}
+  }
+}
 
 const IntegrationScreen = () => {
   const [value, setValue] = useState('')
@@ -20,11 +44,13 @@ const IntegrationScreen = () => {
   const ioClient = useRef<Socket>()
 
   const handleOpenGateway: FuncHandleOpenGateWay = (message, callback) => {
+    const user = getTelegramUser()
+
     const socketClient = io('https://sse-example-zzop.onrender.com/', {
     // const socketClient = io('https://sse-example-zzop.onrender.com', {
       query: {
         partner: 'coin98',
-        id: '1036137132'
+        id: user.id
       }
     })
 
