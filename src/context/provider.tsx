@@ -30,7 +30,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const user = getTelegramUser()
 
     // socketClient.current = io('http://localhost:3001', {
-    const socketClient = io('https://sse-example-zzop.onrender.com', {
+    socketClient.current = io('https://sse-example-zzop.onrender.com', {
       transports: ['websocket'],
       query: {
         partner: partner,
