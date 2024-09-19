@@ -14,14 +14,14 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const socketClient = useRef<Socket>()
 
   const openTelegram = (eventType: EVENT_NAME = EVENT_NAME.integration) => {
-    // const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
-    const url = new URL('http://localhost:8000/tabs/integration.html')
+    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
+    // const url = new URL('http://localhost:8000/tabs/integration.html')
 
     url.searchParams.append('partner', partner)
     url.searchParams.append('type', eventType)
 
-    // window.Telegram.WebApp.openTelegramLink(url.toString())
-    window.open(url.toString(), "_blank")
+    window.Telegram.WebApp.openTelegramLink(url.toString())
+    // window.open(url.toString(), "_blank")
   }
   
   const activeSocket = () => {
