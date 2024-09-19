@@ -17,7 +17,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
     // const url = new URL('http://localhost:8000/tabs/integration.html')
 
-    const encodeUrl = encodeTelegramUrlParameters(`partner=coin98&type=${eventType}`)
+    const encodeUrl = encodeTelegramUrlParameters(`partner=${partner}&type=${eventType}`)
 
     url.searchParams.append('startapp', encodeUrl)
     // url.searchParams.append('type', eventType)
