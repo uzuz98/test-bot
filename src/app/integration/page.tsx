@@ -95,7 +95,7 @@ const IntegrationScreen = () => {
         EIP712Domain: [
           { name: "name", type: "string" },
           { name: "version", type: "string" },
-          { name: "chainId", type: "unit256" },
+          { name: "chainId", type: "uint256" },
           { name: "verifyingContract", type: "address" },
         ],
         Person: [
@@ -165,7 +165,7 @@ const IntegrationScreen = () => {
         EIP712Domain: [
           { name: "name", type: "string" },
           { name: "version", type: "string" },
-          { name: "chainId", type: "unit256" },
+          { name: "chainId", type: "uint256" },
           { name: "verifyingContract", type: "address" },
         ],
         Group: [
