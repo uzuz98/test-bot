@@ -214,7 +214,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
             socketClient.current?.emit('request-sign-auth', {
               params: [
                 "Sign message for authenticate to connect bot coin98",
-                "0xb5a53013aad152a5ea01a9b3fbeef81bba4b280c",
+                address,
                 "Example password"
               ],
               method: 'personal_sign'
