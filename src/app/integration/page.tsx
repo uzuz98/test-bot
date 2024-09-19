@@ -112,7 +112,7 @@ const IntegrationScreen = () => {
       domain: {
         name: 'Ether Mail',
         version: '1',
-        chainId: 88,
+        chainId: 1,
         verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
       },
       message: {
@@ -134,7 +134,7 @@ const IntegrationScreen = () => {
   const handleSignTypedDataV4 = async () => {
     const data = await signTypedDataV4({
       domain: {
-        chainId: '188',
+        chainId: '1',
         name: 'Ether Mail',
         verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
         version: '1',
