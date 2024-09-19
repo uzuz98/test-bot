@@ -1,175 +1,191 @@
 'use client'
-import React, { useEffect, useRef, useState } from "react";
-import {io, Socket} from 'socket.io-client'
-import * as ethUtil from '@metamask/eth-sig-util'
-import {ethers} from 'ethers'
+import React, { useState } from "react";
+import Coin98Provider from "@/context/provider";
+import { useCoin98 } from "@/context";
 
 type FuncHandleOpenGateWay = <T = any> (message: any, callback: (data: T) => void) => void
-interface TelegramUser{
-  id: number
-  first_name: string
-  last_name: string
-  username: string
-  language_code: string
-  allows_write_to_pm: boolean
-}
-
-
-const getTelegramUser = (): Partial<TelegramUser> => {
-  try {
-    const searchData = new URLSearchParams(window.Telegram?.WebApp?.initData)
-    const user = searchData.get('user')
-
-    if (!user) {
-      throw Error('not found')
-    }
-    return JSON.parse(user)
-  } catch (e) {
-    // Default user for testing on browser
-    return {}
-  }
-}
 
 const IntegrationScreen = () => {
   const [value, setValue] = useState('')
-  const [address, setAddress] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [encryptionKey, setEncryptionKey] = useState('')
   const [cipherText, setCipherText] = useState('')
   const [clearText, setClearText] = useState('')
   const [personalSignMsg, setPersonalSignMsg] = useState('')
   const [signTypedData, setSignTypedData] = useState('')
   const [txsHash, setTxsHash] = useState('')
+  const [signTypedDataV3Res, setSignTypedDataV3Res] = useState('')
+  const [signTypedDataV4Res, setSignTypedDataV4Res] = useState('')
 
-  const ioClient = useRef<Socket>()
+  const {
+    connect,
+    address,
+    encryptionKey,
+    getEncryptionKey,
+    decryptKey,
+    encryptKey,
+    authentication,
+    sendTransaction,
+    personalSign,
+    signTypedData: handleSignTypedV1,
+    signTypedDataV3,
+    signTypedDataV4,
+    isAuthenticated
+  } = useCoin98()
 
-  const handleOpenGateway: FuncHandleOpenGateWay = (message, callback) => {
-    const user = getTelegramUser()
-
-    const socketClient = io('https://sse-example-zzop.onrender.com/', {
-      transports: ['websocket'],
-    // const socketClient = io('https://sse-example-zzop.onrender.com', {
-      query: {
-        partner: 'coin98',
-        id: user.id
-      }
-    })
-
-    socketClient.on('join-room', (data) => {
-      if(data.includes('coin98-bot')) {
-        socketClient.emit('from-wallet', message)
-
-        socketClient.on('event-sdk', (eventData) => {
-          console.log("🩲 🩲 => socketClient.on => eventData:", eventData)
-          if(eventData.error) {
-            return
-          }
-          callback(eventData)
-          socketClient.disconnect()
-        })
-      }
-    })
-    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
-    const startapp = 'coin98'
-    url.searchParams.append('partner', startapp)
-
-    window.Telegram.WebApp.openTelegramLink(url.toString())
-    // ioClient.current?.emit('')
-    // window.open('http://localhost:8000/tabs/integration.html', "_blank")
+  const handleSignAuthenticate = async () => {
+    await authentication()
   }
 
   const handleConnect = async () => {
-    handleOpenGateway<[string]>({
-      method: "eth_requestAccounts",
-      params: []
-    }, (data) => {
-      setAddress(data[0])
+    await connect()
+  }
+
+  const handleSendTransaction = async () => {
+    const data = await sendTransaction({
+      from: '0x5a94fF9fefc5B69140375739EB7018AcB0a60cbD',
+      to: '0x5a94fF9fefc5B69140375739EB7018AcB0a60cbD',
+      value: '0x0'
     })
+    setTxsHash(data)
   }
 
-  const handleSendTransaction = () => {
-    const data = {
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          "from": address,
-          "to": address,
-          "value": "0x0",
-          "gasLimit": "0x5208",
-          "gasPrice": "0x2540be400",
-          "type": "0x0"
-        }
-      ]
-    }
-    handleOpenGateway(data, setTxsHash)
+  const handlePersonalSign = async () => {
+    const data = await personalSign({
+      message: "0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765",
+      address: "0xb5a53013aad152a5ea01a9b3fbeef81bba4b280c",
+      password: "Example password"
+    })
+    setPersonalSignMsg(data)
   }
 
-  const handlePersonalSign = () => {
-    const data = {
-      params: [
-        "0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765",
-        "0xb5a53013aad152a5ea01a9b3fbeef81bba4b280c",
-        "Example password"
-      ],
-      method: 'personal_sign'
-    }
-    
-    handleOpenGateway<string>(data, setPersonalSignMsg)
-  }
-
-  const handleGetEncryptionKey = () => {
-    const data = {
-      method: "eth_getEncryptionPublicKey",
-      params: [
-        address
-      ]
-    }
-    handleOpenGateway<string>(data, setEncryptionKey)
+  const handleGetEncryptionKey = async () => {
+    const encryptionKey = await getEncryptionKey()
+    console.log("🩲 🩲 => handleGetEncryptionKey => encryptionKey:", encryptionKey)
   }
 
   const handleEncryptKey = () => {
-    if(!encryptionKey) return
-    const encryptMessage = ethUtil.encrypt({
-      publicKey: encryptionKey,
-      data: value,
-      version: 'x25519-xsalsa20-poly1305'
-    })
-    const message = ethers.hexlify(Buffer.from(JSON.stringify(encryptMessage)))
-    setCipherText(message)
+    const data = encryptKey(value)
+    console.log("🩲 🩲 => handleEncryptKey => data:", data)
+    setCipherText(data)
   }
 
-  const handleDecryptKey = () => {
-    if(!encryptionKey && !cipherText) return
-    const data = {
-      method: 'eth_decrypt',
-      params: [
-        cipherText,
-        address
-      ]
-    }
-    handleOpenGateway<string>(data, setClearText)
+  const handleDecryptKey = async () => {
+    const data = await decryptKey(cipherText)
+    setClearText(data)
   }
 
-  const handleSignTypedDataV1 = () => {
-    const data = {
-      method: 'eth_signTypedData',
-      params: [
-        [
-          {
-              "type": "string",
-              "name": "Message",
-              "value": "Hi, Alice!"
-          },
-          {
-              "type": "uint32",
-              "name": "A number",
-              "value": "1337"
-          }
+  const handleSignTypedDataV1 = async () => {
+    const data = await handleSignTypedV1([
+      {
+        "type": "string",
+        "name": "Message",
+        "value": "Hi, Alice!"
+      },
+      {
+        "type": "uint32",
+        "name": "A number",
+        "value": "1337"
+      }
+    ])
+    setSignTypedData(data)
+  }
+
+  const handleSignTypedDataV3 = async () => {
+    const data = await signTypedDataV3({
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "unit256" },
+          { name: "verifyingContract", type: "address" },
         ],
-        address
-      ]
-    }
-    handleOpenGateway(data, setSignTypedData)
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallet', type: 'address' },
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person' },
+          { name: 'contents', type: 'string' },
+        ],
+      },
+      primaryType: 'Mail',
+      domain: {
+        name: 'Ether Mail',
+        version: '1',
+        chainId: 88,
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+      },
+      message: {
+        from: {
+          name: 'Cow',
+          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+        },
+        to: {
+          name: 'Bob',
+          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+        },
+        contents: 'Hello, Bob!',
+      },
+    })
+    setSignTypedDataV3Res(data)
+    console.log("🩲 🩲 => handleSignTypedDataV3 => data:", data)
+  }
+
+  const handleSignTypedDataV4 = async () => {
+    const data = await signTypedDataV4({
+      domain: {
+        chainId: '188',
+        name: 'Ether Mail',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1',
+      },
+      message: {
+        contents: 'Hello, Bob!',
+        from: {
+          name: 'Cow',
+          wallets: [
+            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+          ],
+        },
+        to: [
+          {
+            name: 'Bob',
+            wallets: [
+              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
+              '0xB0B0b0b0b0b0B000000000000000000000000000',
+            ],
+          },
+        ],
+        attachment: '0x',
+      },
+      primaryType: 'Mail',
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "unit256" },
+          { name: "verifyingContract", type: "address" },
+        ],
+        Group: [
+          { name: 'name', type: 'string' },
+          { name: 'members', type: 'Person[]' },
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person[]' },
+          { name: 'contents', type: 'string' },
+          { name: 'attachment', type: 'bytes' },
+        ],
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallets', type: 'address[]' },
+        ],
+      }
+    })
+    setSignTypedDataV4Res(data)
+    console.log("🩲 🩲 => handleSignTypedDataV4 => data:", data)
   }
 
   return (
@@ -180,12 +196,16 @@ const IntegrationScreen = () => {
         <p>{address}</p>
       </div>
 
-      <div onClick={handleConnect} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+      <div onClick={handleConnect} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center`}>
         Connect
       </div>
 
+      <div onClick={handleSignAuthenticate} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
+        Authentication
+      </div>
+
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full">
-        <div onClick={handleGetEncryptionKey} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleGetEncryptionKey} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
           Get Encryption Key
         </div>
         <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start break-all">
@@ -201,11 +221,11 @@ const IntegrationScreen = () => {
         />
         <div
           onClick={handleEncryptKey}
-          className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center"
+          className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}r`}
         >
           Encrypt
         </div>
-        <div onClick={handleDecryptKey} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleDecryptKey} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
           Decrypt
         </div>
 
@@ -222,7 +242,7 @@ const IntegrationScreen = () => {
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full break-all">
-        <div onClick={handlePersonalSign} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handlePersonalSign} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
           Personal sign
         </div>
 
@@ -231,7 +251,7 @@ const IntegrationScreen = () => {
           <p className="flex-1">{personalSignMsg}</p>
         </div>
 
-        <div onClick={handleSignTypedDataV1} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleSignTypedDataV1} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
           Sign Typed Data
         </div>
 
@@ -239,10 +259,29 @@ const IntegrationScreen = () => {
           Result:
           <p className="flex-1">{signTypedData}</p>
         </div>
+
+
+        <div onClick={handleSignTypedDataV3} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
+          Sign Typed Data V3
+        </div>
+
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start -breakall">
+          Result:
+          <p className="flex-1">{signTypedDataV3Res}</p>
+        </div>
+
+        <div onClick={handleSignTypedDataV4} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
+          Sign Typed Data
+        </div>
+
+        <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start -breakall">
+          Result:
+          <p className="flex-1">{signTypedDataV4Res}</p>
+        </div>
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full break-all">
-        <div onClick={handleSendTransaction} className="cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center">
+        <div onClick={handleSendTransaction} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
           Send Transaction
         </div>
 
@@ -255,4 +294,12 @@ const IntegrationScreen = () => {
   )
 }
 
-export default IntegrationScreen
+const HomePage = () => {
+  return (
+    <Coin98Provider partner="eternals">
+      <IntegrationScreen/>
+    </Coin98Provider>
+  )
+}
+
+export default HomePage
