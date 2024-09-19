@@ -51,7 +51,7 @@ const IntegrationScreen = () => {
   const handlePersonalSign = async () => {
     const data = await personalSign({
       message: "0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765",
-      address: "0xb5a53013aad152a5ea01a9b3fbeef81bba4b280c",
+      address: address,
       password: "Example password"
     })
     setPersonalSignMsg(data)
