@@ -3,7 +3,7 @@ import { Coin98Context } from ".";
 import { io, Socket } from "socket.io-client";
 import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
-import { getReqEvent, getResponseEvent, getTelegramUser } from "./services";
+import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
 import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
@@ -17,8 +17,10 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
     // const url = new URL('http://localhost:8000/tabs/integration.html')
 
-    url.searchParams.append('partner', partner)
-    url.searchParams.append('type', eventType)
+    const encodeUrl = encodeTelegramUrlParameters(`partner=coin98&type=${eventType}`)
+
+    url.searchParams.append('start_app', encodeUrl)
+    // url.searchParams.append('type', eventType)
 
     window.Telegram.WebApp.openTelegramLink(url.toString())
     // window.open(url.toString(), "_blank")

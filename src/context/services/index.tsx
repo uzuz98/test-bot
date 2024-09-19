@@ -25,3 +25,30 @@ export const getReqEvent = (name: string) => {
 export const getResponseEvent = (name: string) => {
   return `on-response-${name}`
 }
+
+const REPLACE_RULES = [
+  ['.', '%2E'],
+  ['-', '%2D'],
+  ['_', '%5F'],
+  ['/', '%2F'],
+  ['&', '-'],
+  ['=', '__'],
+  ['%', '--']
+]
+
+export function encodeTelegramUrlParameters (parameters: string): string {
+  if (!parameters) return ''
+  return REPLACE_RULES
+    .reduce((prev, replaceRule) => {
+      return prev.replaceAll(replaceRule[0], replaceRule[1])
+    }, parameters)
+}
+
+export const decodeTelegramUrlParameters = (parameters: string): string => {
+  if (!parameters) return ''
+  return REPLACE_RULES
+    .reverse()
+    .reduce((prev, replaceRule) => {
+      return prev.replaceAll(replaceRule[1], replaceRule[0])
+    }, parameters)
+}
