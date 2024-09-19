@@ -19,7 +19,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
     const encodeUrl = encodeTelegramUrlParameters(`partner=coin98&type=${eventType}`)
 
-    url.searchParams.append('start_app', encodeUrl)
+    url.searchParams.append('startapp', encodeUrl)
     // url.searchParams.append('type', eventType)
 
     window.Telegram.WebApp.openTelegramLink(url.toString())
