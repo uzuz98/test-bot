@@ -28,15 +28,16 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   
   const activeSocket = () => {
     const user = getTelegramUser()
-
-    // socketClient.current = io('http://localhost:3001', {
-    socketClient.current = io('https://sse-example-zzop.onrender.com', {
-      transports: ['websocket'],
-      query: {
-        partner: partner,
-        id: user.id
-      }
-    })
+    if(!socketClient.current) {
+      // socketClient.current = io('http://localhost:3001', {
+      socketClient.current = io('https://sse-example-zzop.onrender.com', {
+        transports: ['websocket'],
+        query: {
+          partner: partner,
+          id: user.id
+        }
+      })
+    }
   }
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
