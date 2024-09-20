@@ -76,7 +76,7 @@ export default function Home() {
                 }
               })
 
-              socketClient.emit('sdk-login-telegram', {
+              socketClient.emit('response-login-telegram', {
                 customToken: data.customToken
               })
               // axios.post(`${process.env.NEXT_PUBLIC_BASE_API}/api/sse/send`, {
@@ -86,7 +86,7 @@ export default function Home() {
               // console.log("🩲 🩲 => ; => user:", user)
               // const mnemonic = user?.mnemonic
               setTimeout(() => {
-                window.Telegram.WebApp.close()
+                // window.Telegram.WebApp.close()
               }, 1000)
             }
           } catch (error) {

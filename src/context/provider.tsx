@@ -92,7 +92,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
               }
               resolve(eventData[0] as string)
               setAddress(eventData[0] as string)
-              handleAuthentication()
+              handleAuthentication(eventData[0])
             }
           )
         }
