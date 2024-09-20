@@ -17,7 +17,6 @@ export interface ICoin98Context {
   getEncryptionKey: () => Promise<string>
   encryptKey: (data: string) => string
   decryptKey: (msg: string) => Promise<string>
-  authentication: () => Promise<boolean>
 }
 
 export interface TelegramUser{

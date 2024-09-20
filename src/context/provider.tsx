@@ -37,6 +37,12 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           id: user.id
         }
       })
+
+      socketClient.current?.on('accounts-changed', () => {
+        console.log('account changed')
+        setAddress('')
+        setIsAuthenticated(false)
+      })
     }
   }
 
@@ -266,8 +272,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       getEncryptionKey: handleGetEncryptionKey,
       encryptKey: handleEncryptKey,
       decryptKey: handleDecryptKey,
-      switchChain: handleSwitchChain,
-      authentication: handleAuthentication
+      switchChain: handleSwitchChain
     }}>
       {children}
     </Coin98Context.Provider>

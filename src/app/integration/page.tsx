@@ -6,6 +6,7 @@ import { useCoin98 } from "@/context";
 type FuncHandleOpenGateWay = <T = any> (message: any, callback: (data: T) => void) => void
 
 const IntegrationScreen = () => {
+  const [chainId, setChainId] = useState('')
   const [value, setValue] = useState('')
   const [cipherText, setCipherText] = useState('')
   const [clearText, setClearText] = useState('')
@@ -22,7 +23,6 @@ const IntegrationScreen = () => {
     getEncryptionKey,
     decryptKey,
     encryptKey,
-    authentication,
     sendTransaction,
     personalSign,
     signTypedData: handleSignTypedV1,
@@ -30,10 +30,6 @@ const IntegrationScreen = () => {
     signTypedDataV4,
     isAuthenticated
   } = useCoin98()
-
-  const handleSignAuthenticate = async () => {
-    await authentication()
-  }
 
   const handleConnect = async () => {
     await connect()
@@ -198,10 +194,6 @@ const IntegrationScreen = () => {
 
       <div onClick={handleConnect} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center`}>
         Connect
-      </div>
-
-      <div onClick={handleSignAuthenticate} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
-        Authentication
       </div>
 
       <div className="p-4 bg-gray-400 flex flex-col items-center rounded-xl gap-y-4 w-full">
