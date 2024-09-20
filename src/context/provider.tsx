@@ -205,7 +205,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   }
 
-  const handleAuthentication = async () => {
+  const handleAuthentication = async (addressAuthen: string = address) => {
     return await new Promise<boolean>((resolve, reject) => {
       socketClient.current?.on(
         'join-room',
@@ -214,7 +214,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
             socketClient.current?.emit('request-sign-auth', {
               params: [
                 "Sign message for authenticate to connect bot coin98",
-                address,
+                addressAuthen,
                 "Example password"
               ],
               method: 'personal_sign'
@@ -233,7 +233,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   
                 socketClient.current?.removeListener('on-response-sign-auth')
                 
-                socketClient.current?.emit('authentication', {signature: eventData, address}, (isAuthorized: boolean) => {
+                socketClient.current?.emit('authentication', {signature: eventData, address: addressAuthen}, (isAuthorized: boolean) => {
                   if(isAuthorized) {
                     setIsAuthenticated(true)
                   } else {
