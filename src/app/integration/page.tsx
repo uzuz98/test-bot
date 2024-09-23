@@ -263,7 +263,7 @@ const IntegrationScreen = () => {
         </div>
 
         <div onClick={handleSignTypedDataV4} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center ${address && isAuthenticated ? '' : 'opacity-50 border-black cursor-not-allowed'}`}>
-          Sign Typed Data
+          Sign Typed Data V4
         </div>
 
         <div className="gap-x-2 p-2 bg-yellow-400 w-full flex items-start -breakall">
