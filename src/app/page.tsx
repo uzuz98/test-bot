@@ -86,7 +86,7 @@ export default function Home() {
               // console.log("🩲 🩲 => ; => user:", user)
               // const mnemonic = user?.mnemonic
               setTimeout(() => {
-                // window.Telegram.WebApp.close()
+                window.Telegram.WebApp.close()
               }, 1000)
             }
           } catch (error) {
