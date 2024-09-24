@@ -6,19 +6,18 @@ export const POST = async (req: Request) => {
   try {
     const payload = await req.json()
 
-  // get user from payload
-  const user = get(payload, 'user')
+    // get user from payload
+    const user = get(payload, 'user')
 
-  if (!user) {
-
-    return Response.json({
-      error: 'User not found'
-    }, {
-      status: 400
-    })
+    if (!user) {
+      return Response.json({
+        error: 'User not found'
+      }, {
+        status: 400
+      })
   }
 
-  const id = get(JSON.parse(user), 'id')
+    const id = get(JSON.parse(user), 'id')
 
     const verifyToken = jwt.sign(
       {
@@ -36,9 +35,9 @@ export const POST = async (req: Request) => {
         expiresIn: '5m'
       }
     )
-    const bodyTokenTelegram = { data: payload, verifyToken, appId: 'suyklxmori' }
+    const bodyTokenTelegram = { data: payload, verifyToken, appId: 'caydvlwpfm' }
 
-    const response = await axios.post(`https://us-central1-bright-zodiac-339920.cloudfunctions.net/getTokenTelegram`, bodyTokenTelegram)
+    const response = await axios.post(`https://ramper-v2-api-test.coin98.dev/telegram/getTokenBot`, bodyTokenTelegram)
 
     return Response.json({ result: response.data }, {
       status: 200

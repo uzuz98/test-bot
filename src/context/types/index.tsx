@@ -4,19 +4,20 @@ export interface ICoin98Props {
 
 export interface ICoin98Context {
   address: string
+  chainId: string
   encryptionKey: string
   isAuthenticated: boolean
   connect: () => Promise<string>
   // signMessage: () => Promise<string>
   personalSign: (params: IParamsPersonalSign) => Promise<string>
   sendTransaction: (params: IParamsSendTransaction) => Promise<string>
-  switchChain: () => void
   signTypedData: (params: IParamsSignTypedDataV1[]) => Promise<string>
   signTypedDataV3: <T extends ITypesTypedData> (params: IParamsSignTypedData<T>) => Promise<string>
   signTypedDataV4: <T extends ITypesTypedData> (params: IParamsSignTypedData<T>) => Promise<string>
   getEncryptionKey: () => Promise<string>
   encryptKey: (data: string) => string
   decryptKey: (msg: string) => Promise<string>
+  switchChain: (chainId: string) => void
 }
 
 export interface TelegramUser{

@@ -7,6 +7,7 @@ import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegram
 import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
+  const [chainId, setChainId] = useState('0x58')
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -17,10 +18,15 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
     // const url = new URL('http://localhost:8000/tabs/integration.html')
 
-    const encodeUrl = encodeTelegramUrlParameters(`partner=${partner}&type=${eventType}`)
+    const paramsURL = new URLSearchParams({
+      partner,
+      type: eventType,
+      chainId
+    })
+
+    const encodeUrl = encodeTelegramUrlParameters(paramsURL.toString())
 
     url.searchParams.append('startapp', encodeUrl)
-    // url.searchParams.append('type', eventType)
 
     window.Telegram.WebApp.openTelegramLink(url.toString())
     // window.open(url.toString(), "_blank")
@@ -207,8 +213,8 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     return handleOpenGateway(data)
   }
 
-  const handleSwitchChain = () => {
-
+  const handleSwitchChain = (newChainId: string) => {
+    setChainId(newChainId)
   }
 
   const handleAuthentication = async (addressAuthen: string = address) => {
@@ -272,7 +278,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       getEncryptionKey: handleGetEncryptionKey,
       encryptKey: handleEncryptKey,
       decryptKey: handleDecryptKey,
-      switchChain: handleSwitchChain
+      switchChain: handleSwitchChain,
     }}>
       {children}
     </Coin98Context.Provider>

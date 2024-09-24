@@ -1,12 +1,28 @@
 'use client'
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import Coin98Provider from "@/context/provider";
 import { useCoin98 } from "@/context";
 
-type FuncHandleOpenGateWay = <T = any> (message: any, callback: (data: T) => void) => void
+const CHAIN_LIST = [
+  {
+    chain: 'BNB Smart Chain',
+    chainId: '0x38',
+    numChainId: 56
+  },
+  {
+    chain: 'Viction',
+    chainId: '0x58',
+    numChainId: 88
+  },
+  {
+    chain: 'Ethereum',
+    chainId: '0x1',
+    numChainId: 1
+  }
+]
 
 const IntegrationScreen = () => {
-  const [chainId, setChainId] = useState('')
+  const [chainId, setChainId] = useState(CHAIN_LIST[0].chainId)
   const [value, setValue] = useState('')
   const [cipherText, setCipherText] = useState('')
   const [clearText, setClearText] = useState('')
@@ -33,6 +49,10 @@ const IntegrationScreen = () => {
 
   const handleConnect = async () => {
     await connect()
+  }
+
+  const onChangeChain = (e: ChangeEvent<HTMLSelectElement>) => {
+    setChainId(e.target.value)
   }
 
   const handleSendTransaction = async () => {
@@ -124,7 +144,6 @@ const IntegrationScreen = () => {
       },
     })
     setSignTypedDataV3Res(data)
-    console.log("🩲 🩲 => handleSignTypedDataV3 => data:", data)
   }
 
   const handleSignTypedDataV4 = async () => {
@@ -181,7 +200,6 @@ const IntegrationScreen = () => {
       }
     })
     setSignTypedDataV4Res(data)
-    console.log("🩲 🩲 => handleSignTypedDataV4 => data:", data)
   }
 
   return (
@@ -190,6 +208,19 @@ const IntegrationScreen = () => {
       <div className="bg-gray-500 gap-x-2 w-80 text-white p-4 rounded-xl break-all">
         <p>Your address: </p>
         <p>{address}</p>
+      </div>
+
+      <div className="flex gap-x-2">
+        <p>Chain</p>
+        <select
+          name="chainId"
+          onChange={onChangeChain}
+          value={chainId}
+          >
+          {CHAIN_LIST.map((item) => (
+            <option value={item.chainId}>{item.chain}</option>
+          ))}
+        </select>
       </div>
 
       <div onClick={handleConnect} className={`cursor-pointer w-full border border-yellow-300 bg-yellow-200 rounded-xl p-4 flex justify-center items-center`}>
