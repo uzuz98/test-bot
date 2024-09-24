@@ -42,7 +42,7 @@ const nextConfig = {
           key: "Access-Control-Allow-Methods",
           value: "GET, POST, PUT, DELETE, OPTIONS",
         },
-        { key: "Access-Control-Allow-Credentials", value: "true" },
+        { key: "Access-Control-Allow-Credentials", value: true },
       ],
     }
   ]
