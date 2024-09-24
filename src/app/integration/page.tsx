@@ -87,7 +87,7 @@ const IntegrationScreen = () => {
       const encryptionKey = await getEncryptionKey()
       console.log("🩲 🩲 => handleGetEncryptionKey => encryptionKey:", encryptionKey)
     } catch (error) {
-      
+      console.log("🩲 🩲 => handleGetEncryptionKey => error:", error)
     }
   }
 

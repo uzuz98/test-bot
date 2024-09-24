@@ -66,6 +66,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           })
   
           socketClient.current?.on(getResponseEvent(EVENT_NAME.integration), (eventData) => {
+            console.log("🩲 🩲 => socketClient.current?.on => eventData:", eventData)
             if(eventData.error) {
               reject(eventData)
               callback?.(eventData)
