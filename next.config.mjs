@@ -30,7 +30,19 @@ const nextConfig = {
           value: "GET, POST, PUT, DELETE, OPTIONS",
         }
       ],
-
+    },
+    {
+      source: "/api/token",
+      headers: [
+        {
+          key: "Access-Control-Allow-Origin",
+          value: "*", // Set your origin
+        },
+        {
+          key: "Access-Control-Allow-Methods",
+          value: "GET, POST, PUT, DELETE, OPTIONS",
+        }
+      ],
     }
   ]
 };
