@@ -16,8 +16,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const openTelegram = (eventType: EVENT_NAME = EVENT_NAME.integration) => {
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
-    // const url = new URL('http://localhost:8000/tabs/integration.html')
-
     const paramsURL = new URLSearchParams({
       partner,
       type: eventType,
@@ -28,7 +26,14 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
     url.searchParams.append('startapp', encodeUrl)
 
+
     window.Telegram.WebApp.openTelegramLink(url.toString())
+
+    /** TEST ENV */
+    // const url = new URL('http://localhost:8000/tabs/integration.html')
+    // url.searchParams.append('partner', partner)
+    // url.searchParams.append('type', eventType)
+    // url.searchParams.append('chainId', chainId)
     // window.open(url.toString(), "_blank")
   }
   

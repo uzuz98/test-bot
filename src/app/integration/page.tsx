@@ -22,7 +22,6 @@ const CHAIN_LIST = [
 ]
 
 const IntegrationScreen = () => {
-  const [chainId, setChainId] = useState(CHAIN_LIST[0].chainId)
   const [value, setValue] = useState('')
   const [cipherText, setCipherText] = useState('')
   const [clearText, setClearText] = useState('')
@@ -44,7 +43,9 @@ const IntegrationScreen = () => {
     signTypedData: handleSignTypedV1,
     signTypedDataV3,
     signTypedDataV4,
-    isAuthenticated
+    isAuthenticated,
+    chainId,
+    switchChain
   } = useCoin98()
 
   const handleConnect = async () => {
@@ -52,7 +53,7 @@ const IntegrationScreen = () => {
   }
 
   const onChangeChain = (e: ChangeEvent<HTMLSelectElement>) => {
-    setChainId(e.target.value)
+    switchChain(e.target.value)
   }
 
   const handleSendTransaction = async () => {
