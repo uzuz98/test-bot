@@ -32,7 +32,7 @@ const nextConfig = {
       ],
     },
     {
-      source: "/api/token",
+      source: "/api/:path*",
       headers: [
         {
           key: "Access-Control-Allow-Origin",
