@@ -7,7 +7,7 @@ import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegram
 import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
-  const [chainId, setChainId] = useState('0x58')
+  const [chainId, setChainId] = useState('0x38')
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
