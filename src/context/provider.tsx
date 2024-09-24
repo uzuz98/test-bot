@@ -70,6 +70,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
             if(eventData.error) {
               reject(eventData)
               // callback?.(eventData)
+              socketClient.current?.removeListener(getResponseEvent(EVENT_NAME.integration))
               return
             }
             callback?.(eventData)

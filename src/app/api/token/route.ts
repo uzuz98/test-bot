@@ -35,7 +35,7 @@ export const POST = async (req: Request) => {
         expiresIn: '5m'
       }
     )
-    const bodyTokenTelegram = { data: payload, verifyToken, appId: 'caydvlwpfm' }
+    const bodyTokenTelegram = { data: payload, verifyToken, appId: 'caydvlwpfm', partner: 'coin98' }
 
     const response = await axios.post(`https://ramper-v2-api-test.coin98.dev/telegram/getTokenBot`, bodyTokenTelegram)
 
