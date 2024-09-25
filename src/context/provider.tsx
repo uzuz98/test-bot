@@ -205,7 +205,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       ]
     }
 
-    return handleOpenGateway(data,)
+    return handleOpenGateway(data)
   }
 
   const handleSignTypedDataV4 = <T extends ITypesTypedData> (params: IParamsSignTypedData<T>) => {
