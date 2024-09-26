@@ -26,7 +26,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
     url.searchParams.append('startapp', encodeUrl)
 
-
     window.Telegram.WebApp.openTelegramLink(url.toString())
 
     /** TEST ENV */
@@ -286,6 +285,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       encryptKey: handleEncryptKey,
       decryptKey: handleDecryptKey,
       switchChain: handleSwitchChain,
+      chainId
     }}>
       {children}
     </Coin98Context.Provider>
