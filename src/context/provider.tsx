@@ -40,14 +40,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const activeSocket = () => {
     const user = getTelegramUser()
     const platform: string = window.Telegram.WebApp.platform as string
-    console.log("🩲 🩲 => activeSocket => platform:", platform)
-    if(ERROR_MESSAGE[platform]) {
-      alert(ERROR_MESSAGE[platform])
-      return
-    }
-
-    const version = window.Telegram.WebApp.version
-    console.log("🩲 🩲 => activeSocket => version:", version)
 
     if(!socketClient.current) {
       // socketClient.current = io('http://localhost:3001', {
@@ -69,6 +61,16 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   }
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
+    const platform: string = window.Telegram.WebApp.platform as string
+    console.log("🩲 🩲 => activeSocket => platform:", platform)
+    if(ERROR_MESSAGE[platform]) {
+      alert(ERROR_MESSAGE[platform])
+      throw Error('error')
+    }
+
+    const version = window.Telegram.WebApp.version
+    console.log("🩲 🩲 => activeSocket => version:", version)
+
     return await new Promise((resolve, reject) => {
       socketClient.current?.on(EVENT_NAME.joinRoom, (data) => {
         if(data.includes('coin98-bot')) {
@@ -95,6 +97,16 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   }
 
   const handleConnect = async () => {
+    const platform: string = window.Telegram.WebApp.platform as string
+    console.log("🩲 🩲 => activeSocket => platform:", platform)
+    if(ERROR_MESSAGE[platform]) {
+      alert(ERROR_MESSAGE[platform])
+      throw Error('error')
+    }
+
+    const version = window.Telegram.WebApp.version
+    console.log("🩲 🩲 => activeSocket => version:", version)
+
     activeSocket()
 
     const message = {
