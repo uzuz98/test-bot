@@ -64,7 +64,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const platform: string = window.Telegram.WebApp.platform as string
     console.log("🩲 🩲 => activeSocket => platform:", platform)
     if(ERROR_MESSAGE[platform]) {
-      window.Telegram.WebApp.showAlert("ERROR_MESSAGE[platform]")
+      window.Telegram.WebApp.showAlert(ERROR_MESSAGE[platform])
       throw Error('error')
     }
 
@@ -100,7 +100,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const platform: string = window.Telegram.WebApp.platform as string
     console.log("🩲 🩲 => activeSocket => platform:", platform)
     if(ERROR_MESSAGE[platform]) {
-      window.Telegram.WebApp.showAlert("ERROR_MESSAGE[platform]")
+      window.Telegram.WebApp.showAlert(ERROR_MESSAGE[platform])
       throw Error('error')
     }
 
