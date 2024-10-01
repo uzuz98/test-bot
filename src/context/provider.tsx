@@ -5,6 +5,7 @@ import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
 import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
 import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
+import { ERROR_MESSAGE } from "./constants";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
   const [chainId, setChainId] = useState('0x38')
@@ -38,13 +39,24 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   
   const activeSocket = () => {
     const user = getTelegramUser()
+    const platform: string = window.Telegram.WebApp.platform as string
+    console.log("🩲 🩲 => activeSocket => platform:", platform)
+    if(ERROR_MESSAGE[platform]) {
+      alert(ERROR_MESSAGE[platform])
+      return
+    }
+
+    const version = window.Telegram.WebApp.version
+    console.log("🩲 🩲 => activeSocket => version:", version)
+
     if(!socketClient.current) {
       // socketClient.current = io('http://localhost:3001', {
       socketClient.current = io('https://sse-example-zzop.onrender.com', {
         transports: ['websocket'],
         query: {
           partner: partner,
-          id: user.id
+          id: user.id,
+          os: platform
         }
       })
 
