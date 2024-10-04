@@ -23,7 +23,7 @@ export const getReqEvent = (name: string) => {
 }
 
 export const getResponseEvent = (name: string) => {
-  return `on-response-${name}`
+  return `response-${name}`
 }
 
 const REPLACE_RULES = [
