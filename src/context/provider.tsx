@@ -167,6 +167,8 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
     return await new Promise<string>((resolve, reject) => {
       mqttClient.current?.on('message', (topic, data) => {
+        console.log("🩲 🩲 => mqttClient.current?.on => data:", data)
+        console.log("🩲 🩲 => mqttClient.current?.on => topic:", topic)
         if(topic === 'c98 joined') {
           mqttClient.current?.publish(
             getReqEvent(EVENT_NAME.connectWallet),
