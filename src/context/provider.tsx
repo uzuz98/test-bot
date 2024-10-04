@@ -66,6 +66,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
       const threadName = `${partner}-${user.id}-${window.Telegram?.WebApp?.platform}`
 
+      console.log("🩲 🩲 => activeSocket => threadName:", threadName)
       client.subscribe(threadName, (err) => {
         if (err) {
           console.log('Error:', err)
