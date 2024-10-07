@@ -20,25 +20,25 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const mqttClient = useRef<MqttClient>()
 
   const openTelegram = (eventType: EVENT_NAME = EVENT_NAME.integration) => {
-    // const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
-    // const paramsURL = new URLSearchParams({
-    //   partner,
-    //   type: eventType,
-    //   chainId
-    // })
+    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
+    const paramsURL = new URLSearchParams({
+      partner,
+      type: eventType,
+      chainId
+    })
 
-    // const encodeUrl = encodeTelegramUrlParameters(paramsURL.toString())
+    const encodeUrl = encodeTelegramUrlParameters(paramsURL.toString())
 
-    // url.searchParams.append('startapp', encodeUrl)
+    url.searchParams.append('startapp', encodeUrl)
 
-    // window.Telegram.WebApp.openTelegramLink(url.toString())
+    window.Telegram.WebApp.openTelegramLink(url.toString())
 
     /** TEST ENV */
-    const url = new URL('http://localhost:8000/tabs/integration.html')
-    url.searchParams.append('partner', partner)
-    url.searchParams.append('type', eventType)
-    url.searchParams.append('chainId', chainId)
-    window.open(url.toString(), "_blank")
+    // const url = new URL('http://localhost:8000/tabs/integration.html')
+    // url.searchParams.append('partner', partner)
+    // url.searchParams.append('type', eventType)
+    // url.searchParams.append('chainId', chainId)
+    // window.open(url.toString(), "_blank")
   }
   
   const activeSocket = () => {
