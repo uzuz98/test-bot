@@ -12,38 +12,37 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const [chainId, setChainId] = useState('0x38')
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const threadNameMqtt = useRef<string>()
 
   // const socketClient = useRef<Socket>()
 
   const mqttClient = useRef<MqttClient>()
 
   const openTelegram = (eventType: EVENT_NAME = EVENT_NAME.integration) => {
-    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
-    const paramsURL = new URLSearchParams({
-      partner,
-      type: eventType,
-      chainId
-    })
+    // const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
+    // const paramsURL = new URLSearchParams({
+    //   partner,
+    //   type: eventType,
+    //   chainId
+    // })
 
-    const encodeUrl = encodeTelegramUrlParameters(paramsURL.toString())
+    // const encodeUrl = encodeTelegramUrlParameters(paramsURL.toString())
 
-    url.searchParams.append('startapp', encodeUrl)
+    // url.searchParams.append('startapp', encodeUrl)
 
-    window.Telegram.WebApp.openTelegramLink(url.toString())
+    // window.Telegram.WebApp.openTelegramLink(url.toString())
 
     /** TEST ENV */
-    // const url = new URL('http://localhost:8000/tabs/integration.html')
-    // url.searchParams.append('partner', partner)
-    // url.searchParams.append('type', eventType)
-    // url.searchParams.append('chainId', chainId)
-    // window.open(url.toString(), "_blank")
+    const url = new URL('http://localhost:8000/tabs/integration.html')
+    url.searchParams.append('partner', partner)
+    url.searchParams.append('type', eventType)
+    url.searchParams.append('chainId', chainId)
+    window.open(url.toString(), "_blank")
   }
   
   const activeSocket = () => {
     const user = getTelegramUser()
-    const platform: string = window.Telegram.WebApp.platform as string
-
     const IOT_ENDPOINT = `wss://a232wgcz1uajvt-ats.iot.ap-southeast-1.amazonaws.com/mqtt?x-amz-customauthorizer-name=PublicAuthorizerWillDelete&jwt=123&signature=456&device_id=789`;
     
     if(!mqttClient.current) {
@@ -61,13 +60,15 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
             'x-signature': 'some-custom-signature',
             'x-device-id': 'some-device-id'
           }
-        }
+        },
+        username: 'username',
+        password: 'password'
       })
 
       const threadName = `${partner}-${user.id}-${window.Telegram?.WebApp?.platform}`
+      threadNameMqtt.current = threadName
 
-      console.log("🩲 🩲 => activeSocket => threadName:", threadName)
-      client.subscribe(threadName, (err) => {
+      client.subscribe(threadNameMqtt.current, (err) => {
         if (err) {
           console.log('Error:', err)
         } else {
@@ -93,7 +94,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
     const platform: string = window.Telegram.WebApp.platform as string
-    console.log("🩲 🩲 => activeSocket => platform:", platform)
     if(ERROR_MESSAGE[platform]) {
       window.Telegram.WebApp.showAlert(ERROR_MESSAGE[platform])
       throw Error('error')
@@ -103,23 +103,32 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     console.log("🩲 🩲 => activeSocket => version:", version)
 
     return await new Promise((resolve, reject) => {
+      mqttClient.current?.removeAllListeners('message')
       mqttClient.current?.on('message', (topic, data) => {
-        console.log("🩲 🩲 => mqttClient.current?.on => data:", data)
-        console.log("🩲 🩲 => mqttClient.current?.on => topic:", topic)
-        if(topic === 'c98 joined') {
-          mqttClient.current?.publish(getReqEvent(EVENT_NAME.integration), JSON.stringify(message))
+        let resMsg: {
+          data: any
+          event: string
+        } = JSON.parse(data.toString())
+        if(resMsg.event === 'join-room') {
+          console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
+          mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
+            data: message,
+            event: getReqEvent(EVENT_NAME.integration)
+          }))
+          // mqttClient.current?.publish(getReqEvent(EVENT_NAME.integration), JSON.stringify(message))
         }
 
-        if(topic === getResponseEvent(EVENT_NAME.integration)) {
-          let resMsg = JSON.parse(data.toString())
-
-          if(resMsg?.error) {
+        console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
+        console.log("🩲 🩲 => mqttClient.current?.on => getResponseEvent(EVENT_NAME.integration:", getResponseEvent(EVENT_NAME.integration))
+        if(resMsg.event === getResponseEvent(EVENT_NAME.integration)) {
+          mqttClient.current?.removeAllListeners('message')
+          if(resMsg?.data?.error) {
             reject(resMsg)
             return
           }
 
-          callback?.(resMsg)
-          resolve(resMsg)
+          callback?.(resMsg?.data)
+          resolve(resMsg?.data)
         }
       })
 
@@ -166,28 +175,57 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     }
 
     return await new Promise<string>((resolve, reject) => {
+      mqttClient.current?.removeAllListeners('message')
       mqttClient.current?.on('message', (topic, data) => {
-        console.log("🩲 🩲 => mqttClient.current?.on => data:", data)
-        console.log("🩲 🩲 => mqttClient.current?.on => topic:", topic)
-        if(topic === 'c98 joined') {
-          mqttClient.current?.publish(
-            getReqEvent(EVENT_NAME.connectWallet),
-            JSON.stringify(message)
-          )
+        let resMsg: {
+          data: any
+          event: string
+        } = JSON.parse(data.toString())
+
+        console.log("🩲 🩲 => mqttClient.current?.on => resMsg:", resMsg)
+
+        if(resMsg.event === 'join-room') {
+          mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
+            data: message,
+            event: getReqEvent(EVENT_NAME.connectWallet)
+          }))
         }
 
-        if(topic === getResponseEvent(EVENT_NAME.connectWallet)) {
-          let eventData = JSON.parse(data.toString())
-
-          if(eventData?.error) {
-            reject(eventData)
+        console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
+        console.log("🩲 🩲 => mqttClient.current?.on => getResponseEvent(EVENT_NAME.connectWallet):", getResponseEvent(EVENT_NAME.connectWallet))
+        if(resMsg.event === getResponseEvent(EVENT_NAME.connectWallet)) {
+          mqttClient.current?.removeAllListeners('message')
+          
+          if(resMsg?.data?.error) {
+            reject(resMsg)
             return
           }
 
-          resolve(eventData[0] as string)
-          setAddress(eventData[0] as string)
-          handleAuthentication(eventData[0])
+          setAddress(resMsg?.data[0] as string)
+          resolve(resMsg?.data[0])
         }
+
+        // let eventData = JSON.parse(data.toString())
+        // console.log("🩲 🩲 => mqttClient.current?.on => eventData:", eventData)
+        // if(topic === 'c98 joined') {
+        //   mqttClient.current?.publish(
+        //     getReqEvent(EVENT_NAME.connectWallet),
+        //     JSON.stringify(message)
+        //   )
+        // }
+
+        // if(topic === getResponseEvent(EVENT_NAME.connectWallet)) {
+        //   let eventData = JSON.parse(data.toString())
+
+        //   if(eventData?.error) {
+        //     reject(eventData)
+        //     return
+        //   }
+
+        //   resolve(eventData[0] as string)
+        //   setAddress(eventData[0] as string)
+        //   handleAuthentication(eventData[0])
+        // }
       })
 
       // socketClient.current?.on(EVENT_NAME.joinRoom, (data) => {
