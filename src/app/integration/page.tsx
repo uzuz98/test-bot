@@ -59,8 +59,8 @@ const IntegrationScreen = () => {
   const handleSendTransaction = async () => {
     try {
       const data = await sendTransaction({
-        from: '0x5a94fF9fefc5B69140375739EB7018AcB0a60cbD',
-        to: '0x5a94fF9fefc5B69140375739EB7018AcB0a60cbD',
+        from: address,
+        to: address,
         value: '0x0'
       })
       setTxsHash(data)
