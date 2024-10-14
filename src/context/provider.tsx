@@ -8,6 +8,7 @@ import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, I
 import { ERROR_MESSAGE } from "./constants";
 import mqtt, { MqttClient } from 'mqtt'
 import axios from "axios";
+import adapter from '@vespaiach/axios-fetch-adapter'
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
   const [chainId, setChainId] = useState('0x38')
@@ -21,10 +22,14 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const mqttClient = useRef<MqttClient>()
 
   const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
+    const user = getTelegramUser()
     const responseToken = await axios.post('https://api.coin98.com/adapters/user/device', {
+      deviceId: user.id
+    }, {
       headers: {
         Version: '14.6.3'
-      }
+      },
+      adapter
     })
     console.log("🩲 🩲 => openTelegram => responseToken:", responseToken)
     return
