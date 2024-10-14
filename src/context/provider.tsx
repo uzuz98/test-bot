@@ -7,6 +7,7 @@ import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegram
 import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 import { ERROR_MESSAGE } from "./constants";
 import mqtt, { MqttClient } from 'mqtt'
+import axios from "axios";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
   const [chainId, setChainId] = useState('0x38')
@@ -19,7 +20,15 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const mqttClient = useRef<MqttClient>()
 
-  const openTelegram = (eventType: EVENT_NAME = EVENT_NAME.integration) => {
+  const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
+    const responseToken = await axios.post('https://api.coin98.com/adapters/user/device', {
+      headers: {
+        Version: '14.6.3'
+      }
+    })
+    console.log("🩲 🩲 => openTelegram => responseToken:", responseToken)
+    return
+
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
     const paramsURL = new URLSearchParams({
       partner,
@@ -48,21 +57,9 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     if(!mqttClient.current) {
       const client = mqtt.connect(IOT_ENDPOINT, {
         clientId: `ne_chat_client_${Math.random().toString(16).substr(2, 8)}`,
-        reconnectPeriod: 0,
         query: {
-          'bearer-token': 'some-custom-jwt',
-          signature: 'some-custom-signature',
-          'device-id': 'some-device-id'
-        },
-        wsOptions: {
-          headers: {
-            'x-bearer-token': 'some-custom-jwt',
-            'x-signature': 'some-custom-signature',
-            'x-device-id': 'some-device-id'
-          }
-        },
-        username: 'username',
-        password: 'password'
+          jwt: `${user.id}-${window.Telegram?.WebApp?.platform}`
+        }
       })
 
       const threadName = `${partner}-${user.id}-${window.Telegram?.WebApp?.platform}`
@@ -74,6 +71,10 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
         } else {
           console.log('Subscribed!')
         }
+      })
+
+      client.on('message', () => {
+        
       })
 
       mqttClient.current = client
