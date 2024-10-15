@@ -23,6 +23,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
     const user = getTelegramUser()
+    console.log("🩲 🩲 => openTelegram => user:", user)
     const responseToken = await axios.post('https://api.coin98.com/adapters/user/device', {
       deviceId: user.id
     }, {
