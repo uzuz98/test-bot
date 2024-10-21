@@ -4,11 +4,12 @@ import { io, Socket } from "socket.io-client";
 import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
 import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
-import { EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
+import { EnumKeyStorage, EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 import { ERROR_MESSAGE } from "./constants";
 import mqtt, { MqttClient } from 'mqtt'
 import axios from "axios";
 import adapter from '@vespaiach/axios-fetch-adapter'
+import crypto from 'crypto-js'
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
   const [chainId, setChainId] = useState('0x38')
@@ -21,20 +22,53 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const mqttClient = useRef<MqttClient>()
 
-  const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
+  const getToken = async () => {
+    const telegramToken = localStorage.getItem(EnumKeyStorage.telegramToken)
+    if(telegramToken) {
+      return telegramToken
+    }
     const user = getTelegramUser()
-    console.log("🩲 🩲 => openTelegram => user:", user)
-    const responseToken = await axios.post('https://api.coin98.com/adapters/user/device', {
-      deviceId: user.id
+
+    const signature = crypto.HmacSHA256(JSON.stringify({
+      device: `${user.id}`
+    }), process.env.NEXT_PUBLIC_SPAM_TOKEN as string)
+
+    const responseToken = await axios.post<{
+      device: string
+    }, {
+      status: boolean
+      data: {
+        data: {
+          code: string
+        }
+      }
+    }>(process.env.NEXT_PUBLIC_BASE_ADAPTER + '/user/device', {
+      device: `${user.id}`
     }, {
       headers: {
-        Version: '14.6.3'
+        chromeId: '',
+        Version: '14.6.3',
+        os: 'extension',
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer `,
+        Source: 'C98EXTMSKWE',
+        signature: signature
       },
       adapter
     })
-    console.log("🩲 🩲 => openTelegram => responseToken:", responseToken)
-    return
+    
+    if(!responseToken.status || !responseToken.data?.data.code) {
+      throw new Error('error')
+    }
 
+    const newTelegramToken = responseToken.data?.data.code
+    localStorage.setItem(EnumKeyStorage.telegramToken, newTelegramToken)
+
+    return responseToken.data?.data.code
+  }
+
+  const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
     const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
     const paramsURL = new URLSearchParams({
       partner,
@@ -56,20 +90,33 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     // window.open(url.toString(), "_blank")
   }
   
-  const activeSocket = () => {
+  const activeSocket = async () => {
+    const token = await getToken()
+    console.log("🩲 🩲 => activeSocket => token:", token)
+    const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
+
     const user = getTelegramUser()
-    const IOT_ENDPOINT = `wss://a232wgcz1uajvt-ats.iot.ap-southeast-1.amazonaws.com/mqtt?x-amz-customauthorizer-name=PublicAuthorizerWillDelete&jwt=123&signature=456&device_id=789`;
+    let endpoint = `wss://superwallet-stg-iot.coin98.dev/mqtt`
+    const urlString = new URLSearchParams({
+      partner,
+      platform,
+      jwt: token
+    })
+
+    const queryParams = urlString.toString()
+    endpoint += `?${queryParams}`
     
     if(!mqttClient.current) {
-      const client = mqtt.connect(IOT_ENDPOINT, {
+      const client = mqtt.connect(endpoint, {
         clientId: `ne_chat_client_${Math.random().toString(16).substr(2, 8)}`,
-        query: {
-          jwt: `${user.id}-${window.Telegram?.WebApp?.platform}`
-        }
+        reconnectPeriod: 3000,
+        keepalive: 30,
+        connectTimeout: 10000,
       })
 
-      const threadName = `${partner}-${user.id}-${window.Telegram?.WebApp?.platform}`
+      const threadName = `AuthenticatedUser_${user.id}_${partner}_${platform}`
       threadNameMqtt.current = threadName
+      // console.log("🩲 🩲 => activeSocket => threadName:", threadName)
 
       client.subscribe(threadNameMqtt.current, (err) => {
         if (err) {
@@ -85,18 +132,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
       mqttClient.current = client
     }
-
-    // if(!socketClient.current) {
-    //   // socketClient.current = io('http://localhost:3001', {
-    //   socketClient.current = io('https://sse-example-zzop.onrender.com', {
-    //     transports: ['websocket'],
-    //     query: {
-    //       partner: partner,
-    //       id: user.id,
-    //       os: platform
-    //     }
-    //   })
-    // }
   }
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
@@ -106,8 +141,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       throw Error('error')
     }
 
-    const version = window.Telegram.WebApp.version
-    console.log("🩲 🩲 => activeSocket => version:", version)
+    // const version = window.Telegram.WebApp.version
 
     return await new Promise((resolve, reject) => {
       mqttClient.current?.removeAllListeners('message')
@@ -122,11 +156,8 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
             data: message,
             event: getReqEvent(EVENT_NAME.integration)
           }))
-          // mqttClient.current?.publish(getReqEvent(EVENT_NAME.integration), JSON.stringify(message))
         }
 
-        console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
-        console.log("🩲 🩲 => mqttClient.current?.on => getResponseEvent(EVENT_NAME.integration:", getResponseEvent(EVENT_NAME.integration))
         if(resMsg.event === getResponseEvent(EVENT_NAME.integration)) {
           mqttClient.current?.removeAllListeners('message')
           if(resMsg?.data?.error) {
@@ -139,40 +170,18 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
         }
       })
 
-      // socketClient.current?.on(EVENT_NAME.joinRoom, (data) => {
-      //   if(data.includes('coin98-bot')) {
-      //     socketClient.current?.emit(getReqEvent(EVENT_NAME.integration), message, () => {
-      //       socketClient.current?.removeListener(EVENT_NAME.joinRoom)
-      //     })
-  
-      //     socketClient.current?.on(getResponseEvent(EVENT_NAME.integration), (eventData) => {
-      //       console.log("🩲 🩲 => socketClient.current?.on => eventData:", eventData)
-      //       if(eventData.error) {
-      //         reject(eventData)
-      //         // callback?.(eventData)
-      //         socketClient.current?.removeListener(getResponseEvent(EVENT_NAME.integration))
-      //         return
-      //       }
-      //       callback?.(eventData)
-      //       resolve(eventData)
-      //       socketClient.current?.removeListener(getResponseEvent(EVENT_NAME.integration))
-      //     })
-      //   }
-      // })
       openTelegram()
     })
   }
 
   const handleConnect = async () => {
     const platform: string = window.Telegram.WebApp.platform as string
-    console.log("🩲 🩲 => activeSocket => platform:", platform)
     if(ERROR_MESSAGE[platform]) {
       window.Telegram.WebApp.showAlert(ERROR_MESSAGE[platform])
       throw Error('error')
     }
 
-    const version = window.Telegram.WebApp.version
-    console.log("🩲 🩲 => activeSocket => version:", version)
+    // const version = window.Telegram.WebApp.version
 
     activeSocket()
 
@@ -211,54 +220,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           setAddress(resMsg?.data[0] as string)
           resolve(resMsg?.data[0])
         }
-
-        // let eventData = JSON.parse(data.toString())
-        // console.log("🩲 🩲 => mqttClient.current?.on => eventData:", eventData)
-        // if(topic === 'c98 joined') {
-        //   mqttClient.current?.publish(
-        //     getReqEvent(EVENT_NAME.connectWallet),
-        //     JSON.stringify(message)
-        //   )
-        // }
-
-        // if(topic === getResponseEvent(EVENT_NAME.connectWallet)) {
-        //   let eventData = JSON.parse(data.toString())
-
-        //   if(eventData?.error) {
-        //     reject(eventData)
-        //     return
-        //   }
-
-        //   resolve(eventData[0] as string)
-        //   setAddress(eventData[0] as string)
-        //   handleAuthentication(eventData[0])
-        // }
       })
-
-      // socketClient.current?.on(EVENT_NAME.joinRoom, (data) => {
-      //   if(data.includes('coin98-bot')) {
-      //     socketClient.current?.emit(
-      //       getReqEvent(EVENT_NAME.connectWallet),
-      //       message,
-      //       (dataCb: any) => {}
-      //     )
-      //     socketClient.current?.removeListener(EVENT_NAME.joinRoom)
-  
-      //     socketClient.current?.on(
-      //       getResponseEvent(EVENT_NAME.connectWallet),
-      //       (eventData) => {
-      //         socketClient.current?.removeListener(getResponseEvent(EVENT_NAME.connectWallet))
-      //         if(eventData.error) {
-      //           reject(eventData)
-      //           return
-      //         }
-      //         resolve(eventData[0] as string)
-      //         setAddress(eventData[0] as string)
-      //         handleAuthentication(eventData[0])
-      //       }
-      //     )
-      //   }
-      // })
   
       openTelegram(EVENT_NAME.connectWallet)
     })
@@ -320,18 +282,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     const data = {
       method: 'eth_signTypedData',
       params: [
-        // [
-        //   {
-        //       "type": "string",
-        //       "name": "Message",
-        //       "value": "Hi, Alice!"
-        //   },
-        //   {
-        //       "type": "uint32",
-        //       "name": "A number",
-        //       "value": "1337"
-        //   }
-        // ],
         params,
         address
       ]
@@ -365,81 +315,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handleSwitchChain = (newChainId: string) => {
     setChainId(newChainId)
-  }
-
-  const handleAuthentication = async (addressAuthen: string = address) => {
-    return await new Promise<boolean>((resolve, reject) => {
-
-      mqttClient.current?.on('message', (topic, data) => {
-        if(topic === 'c98 joined') {
-          mqttClient.current?.publish(
-            'request-sign-auth',
-            JSON.stringify({
-              params: [
-                "Sign message for authenticate to connect bot coin98",
-                addressAuthen,
-                "Example password"
-              ],
-              method: 'personal_sign'
-            })
-          )
-        }
-
-        if(topic === 'on-response-sign-auth') {
-          let eventData = JSON.parse(data.toString())
-
-          if(eventData?.error) {
-            reject(eventData)
-            return
-          }
-
-          setIsAuthenticated(true)
-        }
-      })
-
-      // socketClient.current?.on(
-      //   'join-room',
-      //   (data) => {
-      //     if (data.includes('coin98-bot')) {
-      //       socketClient.current?.emit('request-sign-auth', {
-      //         params: [
-      //           "Sign message for authenticate to connect bot coin98",
-      //           addressAuthen,
-      //           "Example password"
-      //         ],
-      //         method: 'personal_sign'
-      //       }, (dataCb: any) => {
-  
-      //       })
-      //       socketClient.current?.removeListener('join-room')
-  
-      //       socketClient.current?.on(
-      //         'on-response-sign-auth',
-      //         (eventData) => {
-      //           if (eventData.error) {
-      //             reject(eventData)
-      //             return false
-      //           }
-  
-      //           socketClient.current?.removeListener('on-response-sign-auth')
-                
-      //           socketClient.current?.emit('authentication', {signature: eventData, address: addressAuthen}, (isAuthorized: boolean) => {
-      //             if(isAuthorized) {
-      //               setIsAuthenticated(true)
-      //             } else {
-      //               setAddress('')
-      //               setIsAuthenticated(false)
-      //             }
-      //             resolve(isAuthenticated)
-      //           })
-      //         }
-      //       )
-      //     }
-      //   }
-      // )
-  
-      openTelegram(EVENT_NAME.signAuth)
-    })
   }
 
   return (

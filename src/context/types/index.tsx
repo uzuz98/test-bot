@@ -78,3 +78,7 @@ export interface IParamsSignTypedData <T extends ITypesTypedData> {
   primaryType: keyof T
   message: object
 }
+
+export enum EnumKeyStorage {
+  telegramToken = 'TELEGRAM_TOKEN'
+}
