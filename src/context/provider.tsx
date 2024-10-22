@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import { Coin98Context } from ".";
-import { io, Socket } from "socket.io-client";
 import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
 import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
@@ -10,6 +9,7 @@ import mqtt, { MqttClient } from 'mqtt'
 import axios from "axios";
 import adapter from '@vespaiach/axios-fetch-adapter'
 import crypto from 'crypto-js'
+import { postApiGetToken } from "./services/api";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
   const [chainId, setChainId] = useState('0x38')
@@ -27,36 +27,8 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     if(telegramToken) {
       return telegramToken
     }
-    const user = getTelegramUser()
 
-    const signature = crypto.HmacSHA256(JSON.stringify({
-      device: `${user.id}`
-    }), process.env.NEXT_PUBLIC_SPAM_TOKEN as string)
-
-    const responseToken = await axios.post<{
-      device: string
-    }, {
-      status: boolean
-      data: {
-        data: {
-          code: string
-        }
-      }
-    }>(process.env.NEXT_PUBLIC_BASE_ADAPTER + '/user/device', {
-      device: `${user.id}`
-    }, {
-      headers: {
-        chromeId: '',
-        Version: '14.6.3',
-        os: 'extension',
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer `,
-        Source: 'C98EXTMSKWE',
-        signature: signature
-      },
-      adapter
-    })
+    const responseToken = await postApiGetToken()
     
     if(!responseToken.status || !responseToken.data?.data.code) {
       throw new Error('error')
@@ -92,7 +64,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   
   const activeSocket = async () => {
     const token = await getToken()
-    console.log("🩲 🩲 => activeSocket => token:", token)
     const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
 
     const user = getTelegramUser()
@@ -116,7 +87,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
       const threadName = `AuthenticatedUser_${user.id}_${partner}_${platform}`
       threadNameMqtt.current = threadName
-      // console.log("🩲 🩲 => activeSocket => threadName:", threadName)
 
       client.subscribe(threadNameMqtt.current, (err) => {
         if (err) {
@@ -124,10 +94,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
         } else {
           console.log('Subscribed!')
         }
-      })
-
-      client.on('message', () => {
-        
       })
 
       mqttClient.current = client
@@ -151,7 +117,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           event: string
         } = JSON.parse(data.toString())
         if(resMsg.event === 'join-room') {
-          console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
           mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.integration)
@@ -183,7 +148,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
     // const version = window.Telegram.WebApp.version
 
-    activeSocket()
+    await activeSocket()
 
     const message = {
       method: "eth_requestAccounts",
@@ -198,8 +163,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           event: string
         } = JSON.parse(data.toString())
 
-        console.log("🩲 🩲 => mqttClient.current?.on => resMsg:", resMsg)
-
         if(resMsg.event === 'join-room') {
           mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
             data: message,
@@ -207,8 +170,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           }))
         }
 
-        console.log("🩲 🩲 => mqttClient.current?.on => resMsg.event:", resMsg.event)
-        console.log("🩲 🩲 => mqttClient.current?.on => getResponseEvent(EVENT_NAME.connectWallet):", getResponseEvent(EVENT_NAME.connectWallet))
         if(resMsg.event === getResponseEvent(EVENT_NAME.connectWallet)) {
           mqttClient.current?.removeAllListeners('message')
           
