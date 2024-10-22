@@ -196,9 +196,10 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handlePersonalSign = (params: IParamsPersonalSign) => {
     const data = {
-      params: [address,...Object.values(params)],
+      params: [...Object.values(params), address],
       method: 'personal_sign'
     }
+    
     
     return handleOpenGateway<string>(data)
   }
