@@ -65,6 +65,7 @@ export const SignTypedDataV4 = () => {
   const [signTypedDataV4Result, setSignTypedDataV4Result] = useState('')
 
   const handleSignPersonal = async () => {
+    try {
     const result = await signTypedDataV4({
       domain: {
         chainId: Number(chainId),
@@ -119,6 +120,11 @@ export const SignTypedDataV4 = () => {
     })
 
     setSignTypedDataV4Result(JSON.stringify(result))
+      
+  } catch (error) {
+    console.log("🩲 🩲 => handleSignPersonal => error:", error)
+    
+  }
   }
 
   return (

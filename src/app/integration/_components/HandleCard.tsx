@@ -47,7 +47,7 @@ export const HandleCard = (props: IHandleCard) => {
         </div>
         {
           btnA.result && (
-            <div className="bg-sub3-yellow rounded-md p-4">
+            <div className="bg-sub3-yellow rounded-md p-4 break-all">
               <p className="text-sub2-yellow">Result:</p>
               <p>{btnA.result}</p>
             </div>
@@ -71,7 +71,7 @@ export const HandleCard = (props: IHandleCard) => {
             </div>
             {
               btnB.result && (
-                <div className="bg-sub3-yellow rounded-md p-4">
+                <div className="bg-sub3-yellow rounded-md p-4 break-all">
                   <p className="text-sub2-yellow">Result:</p>
                   <p>{btnB.result}</p>
                 </div>
