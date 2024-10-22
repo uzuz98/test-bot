@@ -6,9 +6,6 @@ import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegram
 import { EnumKeyStorage, EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from "./types";
 import { ERROR_MESSAGE } from "./constants";
 import mqtt, { MqttClient } from 'mqtt'
-import axios from "axios";
-import adapter from '@vespaiach/axios-fetch-adapter'
-import crypto from 'crypto-js'
 import { postApiGetToken } from "./services/api";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner}) => {
@@ -199,7 +196,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handlePersonalSign = (params: IParamsPersonalSign) => {
     const data = {
-      params: Object.values(params),
+      params: [address,...Object.values(params)],
       method: 'personal_sign'
     }
     

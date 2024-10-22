@@ -50,7 +50,6 @@ export interface IParamsSendTransaction {
 
 export interface IParamsPersonalSign {
   message: string
-  address: string
   password?: string
 }
 
