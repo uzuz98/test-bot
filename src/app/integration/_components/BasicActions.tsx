@@ -17,7 +17,7 @@ export const BasicActions = () => {
 
   return (
     <HandleCard
-      title='Basic Actions'
+      title='BASIC ACTIONS'
       btnA={{
         handle: connect,
         description: address ? 'Connected' : 'Connect',
