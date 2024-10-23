@@ -114,6 +114,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           data: any
           event: string
         } = JSON.parse(data.toString())
+        console.log("🩲 🩲 => mqttClient.current?.on => resMsg:", resMsg)
         if(resMsg.event === 'join-room') {
           mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
@@ -162,6 +163,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           data: any
           event: string
         } = JSON.parse(data.toString())
+        console.log("🩲 🩲 => mqttClient.current?.on => resMsg:", resMsg)
 
         if(resMsg.event === 'join-room') {
           mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
