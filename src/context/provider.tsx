@@ -12,7 +12,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   const [chainId, setChainId] = useState('0x38')
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
   const threadNameMqtt = useRef<string>()
 
   // const socketClient = useRef<Socket>()
@@ -114,7 +113,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           event: string
         } = JSON.parse(data.toString())
         if(resMsg.event === 'join-room') {
-          mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
+          mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.integration)
           }))
@@ -161,7 +160,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
         } = JSON.parse(data.toString())
 
         if(resMsg.event === 'join-room') {
-          mqttClient.current?.publish(threadNameMqtt.current, JSON.stringify({
+          mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.connectWallet)
           }))
@@ -280,7 +279,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     <Coin98Context.Provider value={{
       address,
       encryptionKey,
-      isAuthenticated,
       connect: handleConnect,
       sendTransaction: handleSendTransaction,
       personalSign: handlePersonalSign,

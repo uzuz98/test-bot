@@ -63,7 +63,7 @@ export const SwitchChain = () => {
       </div>
       <div className="bg-sub2 text-xs rounded-full px-4 py-3 border border-main-yellow w-fit">
         <span className="text-main-yellow">
-          Chain Id <span className="text-white">{findChain?.chainId}</span>
+          Chain ID <span className="text-white">{findChain?.chainId}</span>
         </span>
       </div>
       <div className="flex gap-x-4">

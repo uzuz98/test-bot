@@ -6,7 +6,6 @@ export interface ICoin98Context {
   address: string
   chainId: string
   encryptionKey: string
-  isAuthenticated: boolean
   connect: () => Promise<string>
   // signMessage: () => Promise<string>
   personalSign: (params: IParamsPersonalSign) => Promise<string>
