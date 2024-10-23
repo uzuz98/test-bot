@@ -119,9 +119,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.integration)
-          }), {
-            qos: 1
-          })
+          }))
         }
 
         if(resMsg.event === getResponseEvent(EVENT_NAME.integration)) {
@@ -169,9 +167,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
           mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.connectWallet)
-          }), {
-            qos: 1
-          })
+          }))
         }
 
         if(resMsg.event === getResponseEvent(EVENT_NAME.connectWallet)) {
