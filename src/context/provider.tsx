@@ -71,6 +71,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     })
 
     const queryParams = urlString.toString()
+    console.log("🩲 🩲 => activeSocket => queryParams:", queryParams)
     endpoint += `?${queryParams}`
     
     if(!mqttClient.current) {
@@ -83,6 +84,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
       const threadName = `AuthenticatedUser_${user.id}_${partner}_${platform}`
       threadNameMqtt.current = threadName
+      console.log("🩲 🩲 => activeSocket => threadName:", threadName)
 
       client.subscribe(threadNameMqtt.current, (err) => {
         if (err) {
