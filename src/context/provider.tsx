@@ -54,7 +54,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
 
       const user = getTelegramUser()
-      let endpoint = `wss://a232wgcz1uajvt-ats.iot.ap-southeast-1.amazonaws.com/mqtt?x-amz-customauthorizer-name=PublicAuthorizerWillDelete`
+      let endpoint = `wss://superwallet-stg-iot.coin98.dev/mqtt?`
       const urlString = new URLSearchParams({
         partner,
         platform,
