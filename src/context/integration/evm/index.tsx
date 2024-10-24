@@ -54,20 +54,8 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
           mqttClient.publish(threadNameMqtt, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.connectWallet)
-          }), {
-            qos: 1,
-            retain: true
-          }, (error) => {
-            console.log("🩲 🩲 => mqttClient.on => error:", error)
-          })
+          }))
         }
-
-        mqttClient.publish(threadNameMqtt, '', {
-          qos: 1,
-          retain: true
-        }, (error) => {
-          console.log("🩲 🩲 => mqttClient.on => error:", error)
-        })
 
         if(resMsg.event === getResponseEvent(EVENT_NAME.connectWallet)) {
           mqttClient.removeAllListeners('message')
