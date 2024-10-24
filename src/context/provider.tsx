@@ -83,7 +83,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       })
 
       mqttClient.current = client
-      return client
+      return mqttClient.current
     }
     return mqttClient.current
   }
