@@ -162,12 +162,14 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
   }
 
   useEffect(() => {
-    handleAccountsChanged(
-      () => {
-        setAddress('')
-      }
-    )
-  }, [])
+    if(window.Telegram?.WebApp?.platform) {
+      handleAccountsChanged(
+        () => {
+          setAddress('')
+        }
+      )
+    }
+  }, [window.Telegram?.WebApp?.platform])
 
   return (
     <EvmContext.Provider value={{
