@@ -13,9 +13,12 @@ interface IHandleCard {
   btnB?: {
     description: string
     codeExample: string
-    handle: () => void
+    handle: () => any
     result?: string
     disabled?: boolean
+  }
+  input?: {
+    value: string
   }
 }
 

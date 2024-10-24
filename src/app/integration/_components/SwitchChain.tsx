@@ -1,5 +1,10 @@
-import { useCoin98 } from "@/context";
+import { useEvmHandle } from "@/context/integration/evm";
 import React, { useMemo, useState } from "react";
+
+interface IProps {
+  chainId: string
+  switchChain: (chainId: string) => void
+}
 
 const CHAIN_LIST = [
   {
@@ -19,8 +24,8 @@ const CHAIN_LIST = [
   }
 ]
 
-export const SwitchChain = () => {
-  const {address, chainId, switchChain} = useCoin98()
+export const SwitchChain: React.FC<IProps> = ({chainId, switchChain}) => {
+  const { address } = useEvmHandle()
   const [isCollapse, setIsCollapse] = useState(true)
   // if(!address) return null
 

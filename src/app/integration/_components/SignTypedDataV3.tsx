@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useCoin98 } from "@/context";
+import { useEvmHandle } from "@/context/integration/evm";
 
 const codeExampleSign = `
-const { signTypedDataV3, address, chainId } = useCoin98()
+const { signTypedDataV3, address, chainId } = useEvmHandle()
 const handleSignPersonal = () => {
   signTypedDataV3({
     types: {
@@ -33,11 +33,11 @@ const handleSignPersonal = () => {
     message: {
       from: {
         name: 'Cow',
-        wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+        wallet: <FROM ADDRESS>,
       },
       to: {
         name: 'Bob',
-        wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+        wallet: <TO ADDRESS>,
       },
       contents: 'Hello, Bob!',
     },
@@ -45,8 +45,8 @@ const handleSignPersonal = () => {
 }
 `
 
-export const SignTypedDataV3 = () => {
-  const { signTypedDataV3, address, chainId } = useCoin98()
+export const SignTypedDataV3 = ({chainId = ''}) => {
+  const { signTypedDataV3, address } = useEvmHandle()
   const [signTypedDataV3Result, setSignTypedDataV3Result] = useState('')
 
   const handleSignPersonal = async () => {

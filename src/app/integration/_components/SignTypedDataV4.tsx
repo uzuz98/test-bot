@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useCoin98 } from "@/context";
+import { useEvmHandle } from "@/context/integration/evm";
 
 const codeExampleSign = `
-const { signTypedDataV4, address, chainId } = useCoin98()
+const { signTypedDataV4, address, chainId } = useEvmHandle()
 const handleSignPersonal = () => {
   signTypedDataV4({
     domain: {
@@ -60,8 +60,8 @@ const handleSignPersonal = () => {
 }
 `
 
-export const SignTypedDataV4 = () => {
-  const { signTypedDataV4, address, chainId } = useCoin98()
+export const SignTypedDataV4 = ({chainId = ''}) => {
+  const { signTypedDataV4, address } = useEvmHandle()
   const [signTypedDataV4Result, setSignTypedDataV4Result] = useState('')
 
   const handleSignPersonal = async () => {

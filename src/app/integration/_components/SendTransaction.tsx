@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useCoin98 } from "@/context";
+import { useEvmHandle } from "@/context/integration/evm";
 
 const codeExample = `
-const {sendTransaction, address} = useCoin98()
+const {sendTransaction, address} = useEvmHandle()
 
 const handleSendTransaction = async () => {
   await sendTransaction({
@@ -15,7 +15,7 @@ const handleSendTransaction = async () => {
 `
 
 export const SendTransaction = () => {
-  const {sendTransaction, address} = useCoin98()
+  const {sendTransaction, address} = useEvmHandle()
   const [txsResult, setTxResult] = useState('')
 
   const handleSendTransaction = async () => {
@@ -34,7 +34,8 @@ export const SendTransaction = () => {
         description: 'Send',
         codeExample: codeExample,
         handle: handleSendTransaction,
-        disabled: !address
+        disabled: !address,
+        result: txsResult
       }}
     />
   )

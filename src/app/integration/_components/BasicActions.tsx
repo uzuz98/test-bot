@@ -1,9 +1,10 @@
 import React from "react";
 import { HandleCard } from "./HandleCard";
 import { useCoin98 } from "@/context";
+import { useEvmHandle } from "@/context/integration/evm";
 
 const codeConnect = `
-const {connect} = useCoin98()
+const {connect} = useEvmHandle()
 const handleConnect = () => {
   connect()
 }
@@ -13,7 +14,7 @@ export const BasicActions = () => {
   const {
     connect,
     address
-  } = useCoin98()
+  } = useEvmHandle()
 
   return (
     <HandleCard

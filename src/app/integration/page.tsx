@@ -11,10 +11,17 @@ import { SignTypedData } from "./_components/SignTypedData";
 import { SignTypedDataV3 } from "./_components/SignTypedDataV3";
 import { SendTransaction } from "./_components/SendTransaction";
 import { SwitchChain } from "./_components/SwitchChain";
+import { Encrypt } from "./_components/Encrypt";
 
-const IntegrationScreen = () => {
-  const { address } = useCoin98()
+interface IIntegrationProps {
+  switchChain: (chainId: string) => void
+  chainId: string
+}
 
+const IntegrationScreen: React.FC<IIntegrationProps> = ({
+  chainId,
+  switchChain
+}) => {
   return (
     <div className="bg-main-bg">
       <div className="bg-header bg-cover bg-no-repeat h-60 bg-center">
@@ -25,15 +32,19 @@ const IntegrationScreen = () => {
         </div>
       </div>
       <div className="p-4">
-        <SwitchChain/>
+        <SwitchChain
+          chainId={chainId}
+          switchChain={switchChain}
+        />
         <div className="flex flex-col items-center gap-y-6">
 
           <BasicActions />
           <PersonalSign />
-          <SignTypedData/>
-          <SignTypedDataV3/>
-          <SignTypedDataV4/>
-          <SendTransaction/>
+          <SignTypedData />
+          <SignTypedDataV3 chainId={chainId} />
+          <SignTypedDataV4 chainId={chainId} />
+          <SendTransaction />
+          <Encrypt />
 
           <ModalShowCode />
         </div>
@@ -43,9 +54,18 @@ const IntegrationScreen = () => {
 }
 
 const HomePage = () => {
+  const [chainId, setChainId] = useState('0x38')
+
+  const handleSwitchChain = (newChainId: string) => {
+    setChainId(newChainId)
+  }
+
   return (
-    <Coin98Provider partner="eternals">
-      <IntegrationScreen/>
+    <Coin98Provider partner="eternals" chainId={chainId}>
+      <IntegrationScreen
+        switchChain={handleSwitchChain}
+        chainId={chainId}
+      />
     </Coin98Provider>
   )
 }
