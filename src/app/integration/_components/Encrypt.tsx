@@ -12,6 +12,11 @@ const { encryptKey } = useEvmHandle()
 encryptKey(<YOUR MESSAGE>)
 `
 
+const codeDecryptExample = `
+const {decrypt} = useEvmHandle()
+decrypt(<YOUR DATA ENCRYPTED>)
+`
+
 export const Encrypt = () => {
   const {getEncryptionKey, encryptKey, address, encryptionKey, decryptKey} = useEvmHandle()
   const [data, setData] = useState('')
@@ -59,7 +64,7 @@ export const Encrypt = () => {
         }
       }}
       btnB={{
-        codeExample: '',
+        codeExample: codeDecryptExample,
         description: 'Decrypt',
         handle: handleDecryptKey,
         disabled: !address || !dataEncrypt,

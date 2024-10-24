@@ -3,7 +3,7 @@ import { ERROR_MESSAGE } from "@/context/constants";
 import { getReqEvent, getResponseEvent } from "@/context/services";
 import { EVENT_NAME } from "@/context/types";
 import { IEvmContext, IParamsPersonalSign, IParamsSendTransaction, IParamsSignTypedData, IParamsSignTypedDataV1, ITypesTypedData } from './type'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as ethUtil from '@metamask/eth-sig-util'
 import {ethers} from 'ethers'
 
@@ -13,7 +13,7 @@ const EvmContext = React.createContext<IEvmContext>({
 } as IEvmContext)
 
 const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
-  const {handleOpenGateway, activeSocket, openTelegram} = useCoin98()
+  const {handleOpenGateway, activeMqtt, openTelegram, handleAccountsChanged} = useCoin98()
 
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
@@ -28,7 +28,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
 
     // const version = window.Telegram.WebApp.version
 
-    const {mqttClient, threadNameMqtt} = await activeSocket()
+    const {mqttClient, threadNameMqtt} = await activeMqtt()
     mqttClient.on('error', (err) => {
       console.log("🩲 🩲 => mqttClient.on => err:", err)
     })
@@ -48,7 +48,6 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
           data: any
           event: string
         } = JSON.parse(messageData)
-        console.log("🩲 🩲 => mqttClient.on => resMsg:", resMsg)
 
         if(resMsg.event === 'join-room') {
           mqttClient.publish(threadNameMqtt, JSON.stringify({
@@ -161,6 +160,14 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
 
     return handleOpenGateway(data)
   }
+
+  useEffect(() => {
+    handleAccountsChanged(
+      () => {
+        setAddress('')
+      }
+    )
+  }, [])
 
   return (
     <EvmContext.Provider value={{

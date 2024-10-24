@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Coin98Context } from ".";
 import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
 import { EnumKeyStorage, EVENT_NAME, FuncHandleOpenGateWay, ICoin98Props } from "./types";
@@ -8,8 +8,11 @@ import { postApiGetToken } from "./services/api";
 import { EvmProvider } from "./integration/evm";
 
 const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({children, partner, chainId = '0x38'}) => {
-  const threadNameMqtt = useRef<string>()
   const mqttClient = useRef<MqttClient>()
+  const threadNameMqtt = useRef<string>()
+
+  const mqttGeneralClient = useRef<MqttClient>()
+  const threadNameMqttGeneral = useRef<string>()
 
   const getToken = async () => {
     const telegramToken = localStorage.getItem(EnumKeyStorage.telegramToken)
@@ -48,7 +51,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     // window.open(url.toString(), "_blank")
   }
   
-  const activeSocket = async () => {
+  const activeMqtt = async () => {
     if(!mqttClient.current?.connected) {
       const token = await getToken()
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
@@ -101,7 +104,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       throw Error('error')
     }
 
-    await activeSocket()
+    await activeMqtt()
     // const version = window.Telegram.WebApp.version
 
     return await new Promise((resolve, reject) => {
@@ -137,11 +140,44 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     })
   }
 
+  const handleAccountsChanged = async (callback: () => void) => {
+    if (!mqttGeneralClient.current?.connected) {
+      const jwtToken = await getToken()
+      const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
+      const partner = 'GENERAL'
+      const endpoint = `${process.env.PLASMO_PUBLIC_MQTT_ENDPOINT}?jwt=${jwtToken}&partner=${partner}&platform=${platform}`
+      const user = getTelegramUser()
+      threadNameMqttGeneral.current = `AuthenticatedUser_${user.id}_${partner}_${platform}`
+
+      mqttGeneralClient.current = mqtt.connect(
+        endpoint,
+        {
+          clientId: `ne_chat_client_${Math.random().toString(16).substr(2, 8)}`,
+          reconnectPeriod: 3000,
+          keepalive: 30,
+          connectTimeout: 10000
+        }
+      )
+      mqttGeneralClient.current.subscribe(threadNameMqttGeneral.current!)
+    }
+
+    mqttGeneralClient.current.on('message', (topic, data) => {
+      const msgText = data.toString()
+      if (!msgText) return
+
+      const {type} = JSON.parse(msgText)
+      if (type === 'accountsChanged') {
+        callback()
+      }
+    })
+  }
+
   return (
     <Coin98Context.Provider value={{
       handleOpenGateway,
-      activeSocket,
-      openTelegram
+      activeMqtt,
+      openTelegram,
+      handleAccountsChanged
     }}>
       <EvmProvider>
         {children}

@@ -26,7 +26,6 @@ export const decodeTelegramUrlParameters = (parameters: string): string => {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
-  console.log("🩲 🩲 => Home => isLoading:", isLoading)
 
   const testTelegram = () => {
     if (typeof window !== 'undefined') {
@@ -40,7 +39,6 @@ export default function Home() {
       uri = decodeURIComponent(uri)
       const params = new URLSearchParams(uri)
       const data = Object.fromEntries(params.entries())
-      console.log("🩲 🩲 => testTelegram => data:", data)
       const user = params.get('user')
       const startParams = data.start_param
       if(startParams) {

@@ -7,11 +7,12 @@ export interface ICoin98Props {
 
 export interface ICoin98Context {
   handleOpenGateway: FuncHandleOpenGateWay
-  activeSocket: () => Promise<{
+  activeMqtt: () => Promise<{
     mqttClient: MqttClient
     threadNameMqtt: string
   }>
   openTelegram: (eventName: EVENT_NAME) => void
+  handleAccountsChanged: (callback: () => void) => void
 }
 
 export interface TelegramUser{
