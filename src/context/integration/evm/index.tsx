@@ -28,7 +28,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
 
     // const version = window.Telegram.WebApp.version
 
-    await activeSocket()
+    const mqttClient = await activeSocket()
 
     const message = {
       method: "eth_requestAccounts",
