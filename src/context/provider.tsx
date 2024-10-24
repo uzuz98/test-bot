@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useRef, useState } from "react";
 import { Coin98Context } from ".";
 import { encodeTelegramUrlParameters, getReqEvent, getResponseEvent, getTelegramUser } from "./services";
@@ -142,6 +143,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handleAccountsChanged = async (callback: () => void) => {
     if (!mqttGeneralClient.current?.connected) {
+      console.log("🩲 🩲 => handleAccountsChanged => window.Telegram?.WebApp?.platform:", window.Telegram?.WebApp?.platform)
       const jwtToken = await getToken()
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
       const partner = 'GENERAL'
