@@ -38,7 +38,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
       params: []
     }
 
-    return await new Promise<string>( async (resolve, reject) => {
+    return await new Promise<string>((resolve, reject) => {
       mqttClient.removeAllListeners('message')
       mqttClient.on('message', (topic, data) => {
         const messageData = data.toString()
@@ -48,6 +48,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
           data: any
           event: string
         } = JSON.parse(messageData)
+        console.log("🩲 🩲 => mqttClient.on => resMsg:", resMsg)
 
         if(resMsg.event === 'join-room') {
           mqttClient.publish(threadNameMqtt, JSON.stringify({
