@@ -49,7 +49,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   }
   
   const activeSocket = async () => {
-    if(!mqttClient.current) {
+    if(!mqttClient.current?.connected) {
       const token = await getToken()
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
 
@@ -83,7 +83,9 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       })
 
       mqttClient.current = client
+      return client
     }
+    return mqttClient.current
   }
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
@@ -92,6 +94,8 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       window.Telegram.WebApp.showAlert(ERROR_MESSAGE[platform])
       throw Error('error')
     }
+
+    await activeSocket()
     // const version = window.Telegram.WebApp.version
 
     return await new Promise((resolve, reject) => {

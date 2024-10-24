@@ -7,13 +7,32 @@ const { getEncryptionKey } = useEvmHandle()
 getEncryptionKey()
 `
 
+const codeEncrypExample = `
+const { encryptKey } = useEvmHandle()
+encryptKey(<YOUR MESSAGE>)
+`
+
 export const Encrypt = () => {
-  const {getEncryptionKey} = useEvmHandle()
+  const {getEncryptionKey, encryptKey, address, encryptionKey, decryptKey} = useEvmHandle()
   const [data, setData] = useState('')
+  const [dataEncrypt, setDataEncrypt] = useState('')
+  const [value, setValue] = useState('')
+  const [dataDecrypt, setDataDecrypt] = useState('')
 
   const handleGetEncryption = async () => {
     const result = await getEncryptionKey()
     setData(JSON.stringify(result))
+  }
+
+  const handleEncryptKey = async () => {
+    const result = encryptKey(value)
+    setDataEncrypt(result)
+  }
+
+  const handleDecryptKey = async () => {
+    const res = await decryptKey(dataEncrypt)
+
+    setDataDecrypt(res)
   }
 
   return (
@@ -23,9 +42,29 @@ export const Encrypt = () => {
         codeExample: codeExample,
         description: 'Get Public Encryption Key',
         handle: handleGetEncryption,
-        result: data
+        result: data,
+        disabled: !address
       }}
       // btnB={{}}
+      inputCard={{
+        value,
+        onChangeValue: setValue,
+        label: 'Encryption Text',
+        btn: {
+          codeExample: codeEncrypExample,
+          description: 'Encrypt',
+          handle: handleEncryptKey,
+          disabled: !address || !encryptionKey || !value,
+          result: dataEncrypt
+        }
+      }}
+      btnB={{
+        codeExample: '',
+        description: 'Decrypt',
+        handle: handleDecryptKey,
+        disabled: !address || !dataEncrypt,
+        result: dataDecrypt
+      }}
     />
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React, { ChangeEvent } from "react";
 
 interface IHandleCard {
   title: string
@@ -17,17 +17,30 @@ interface IHandleCard {
     result?: string
     disabled?: boolean
   }
-  input?: {
+  inputCard?: {
     value: string
+    onChangeValue: (value: string) => void
+    label: string
+    btn: {
+      description: string
+      codeExample: string
+      handle: () => any
+      result?: string
+      disabled?: boolean
+    }
   }
 }
 
 export const HandleCard = (props: IHandleCard) => {
-  const {title, btnA, btnB} = props
+  const {title, btnA, btnB, inputCard} = props
 
   const handleShowCode = (code: string) => () => {
     // @ts-expect-error
     window.openModal(code)
+  }
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    inputCard?.onChangeValue(e.target.value)
   }
 
   return (
@@ -38,7 +51,7 @@ export const HandleCard = (props: IHandleCard) => {
       <div>
         <div
           onClick={btnA.disabled ? undefined : btnA.handle}
-          className={"cursor-pointer py-4 text-center rounded-md bg-sub-yellow hover:text-black " + (btnA.disabled ? 'bg-sub2' : 'bg-sub-yellow')}
+          className={"cursor-pointer py-4 text-center rounded-md bg-sub-yellow " + (btnA.disabled ? 'bg-sub2 cursor-not-allowed' : 'bg-sub-yellow hover:text-black')}
         >
           <p>{btnA.description}</p>
         </div>
@@ -59,12 +72,47 @@ export const HandleCard = (props: IHandleCard) => {
       </div>
 
       {
+        inputCard ? (
+          <>
+            <input
+              className="p-4 rounded-md bg-sub2 outline-none"
+              value={inputCard.value}
+              onChange={onChange}
+              placeholder={inputCard.label}
+            />
+            <div>
+              <div
+                onClick={inputCard.btn.disabled ? undefined : inputCard.btn.handle}
+                className={"cursor-pointer py-4 text-center rounded-md bg-sub-yellow " + (inputCard.btn.disabled ? 'bg-sub2 cursor-not-allowed' : 'bg-sub-yellow hover:text-black')}
+              >
+                <p>{inputCard.btn.description}</p>
+              </div>
+              <div
+                onClick={handleShowCode(inputCard.btn.codeExample)}
+                className="text-sub2-yellow cursor-pointer text-center my-2 text-sm"
+              >
+                <p>{'< >'} Show code Example</p>
+              </div>
+              {
+                inputCard.btn.result && (
+                  <div className="bg-sub3-yellow rounded-md p-4 break-all">
+                    <p className="text-sub2-yellow">Result:</p>
+                    <p>{inputCard.btn.result}</p>
+                  </div>
+                )
+              }
+            </div>
+          </>
+        ) : null
+      }
+
+      {
         btnB && (
           <>
             <div>
               <div
                 onClick={btnB.disabled ? undefined : btnB.handle}
-                className={"cursor-pointer py-4 text-center rounded-md bg-sub-yellow  hover:text-black " + (btnB.disabled ? 'bg-sub2' : 'bg-sub-yellow')}
+                className={"cursor-pointer py-4 text-center rounded-md bg-sub-yellow  " + (btnB.disabled ? 'bg-sub2 cursor-not-allowed' : 'bg-sub-yellow hover:text-black')}
                 >
                 <p>{btnB.description}</p>
               </div>
