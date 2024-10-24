@@ -6,10 +6,11 @@ export interface ICoin98Props {
 }
 
 export interface ICoin98Context {
-  mqttClient: MqttClient
-  threadNameMqtt: string
   handleOpenGateway: FuncHandleOpenGateWay
-  activeSocket: () => Promise<MqttClient>
+  activeSocket: () => Promise<{
+    mqttClient: MqttClient
+    threadNameMqtt: string
+  }>
   openTelegram: (eventName: EVENT_NAME) => void
 }
 

@@ -13,7 +13,7 @@ const EvmContext = React.createContext<IEvmContext>({
 } as IEvmContext)
 
 const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
-  const {handleOpenGateway, activeSocket, openTelegram, threadNameMqtt} = useCoin98()
+  const {handleOpenGateway, activeSocket, openTelegram} = useCoin98()
 
   const [address, setAddress] = useState('')
   const [encryptionKey, setEncryptionKey] = useState('')
@@ -28,7 +28,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
 
     // const version = window.Telegram.WebApp.version
 
-    const mqttClient = await activeSocket()
+    const {mqttClient, threadNameMqtt} = await activeSocket()
     mqttClient.on('error', (err) => {
       console.log("🩲 🩲 => mqttClient.on => err:", err)
     })

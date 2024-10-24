@@ -83,9 +83,15 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       })
 
       mqttClient.current = client
-      return mqttClient.current
+      return {
+        mqttClient: mqttClient.current,
+        threadNameMqtt: threadNameMqtt.current
+      }
     }
-    return mqttClient.current
+    return {
+      mqttClient: mqttClient.current,
+      threadNameMqtt: threadNameMqtt.current!
+    }
   }
 
   const handleOpenGateway: FuncHandleOpenGateWay = async (message, callback) => {
@@ -130,8 +136,6 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   return (
     <Coin98Context.Provider value={{
-      threadNameMqtt: threadNameMqtt.current!,
-      mqttClient: mqttClient.current!,
       handleOpenGateway,
       activeSocket,
       openTelegram
