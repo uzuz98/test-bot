@@ -107,16 +107,31 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
     return await new Promise((resolve, reject) => {
       mqttClient.current?.removeAllListeners('message')
       mqttClient.current?.on('message', (topic, data) => {
+        const messageData = data.toString()
+        if(!messageData) return
+
         let resMsg: {
           data: any
           event: string
-        } = JSON.parse(data.toString())
+        } = JSON.parse(messageData)
         if(resMsg.event === 'join-room') {
           mqttClient.current?.publish(threadNameMqtt.current!, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.integration)
-          }))
+          }), {
+            qos: 1,
+            retain: true
+          },(error) => {
+            console.log("🩲 🩲 => mqttClient.on => error:", error)
+          })
         }
+
+        mqttClient.current?.publish(threadNameMqtt.current!, '', {
+          qos: 1,
+          retain: true
+        }, (error) => {
+          console.log("🩲 🩲 => mqttClient.on => error:", error)
+        })
 
         if(resMsg.event === getResponseEvent(EVENT_NAME.integration)) {
           mqttClient.current?.removeAllListeners('message')

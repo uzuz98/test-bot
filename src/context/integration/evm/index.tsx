@@ -38,21 +38,35 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
       params: []
     }
 
-    return await new Promise<string>((resolve, reject) => {
+    return await new Promise<string>( async (resolve, reject) => {
       mqttClient.removeAllListeners('message')
       mqttClient.on('message', (topic, data) => {
-        console.log("🩲 🩲 => mqttClient.on => topic:", topic)
+        const messageData = data.toString()
+        if(!messageData) return
+
         let resMsg: {
           data: any
           event: string
-        } = JSON.parse(data.toString())
+        } = JSON.parse(messageData)
 
         if(resMsg.event === 'join-room') {
           mqttClient.publish(threadNameMqtt, JSON.stringify({
             data: message,
             event: getReqEvent(EVENT_NAME.connectWallet)
-          }))
+          }), {
+            qos: 1,
+            retain: true
+          }, (error) => {
+            console.log("🩲 🩲 => mqttClient.on => error:", error)
+          })
         }
+
+        mqttClient.publish(threadNameMqtt, '', {
+          qos: 1,
+          retain: true
+        }, (error) => {
+          console.log("🩲 🩲 => mqttClient.on => error:", error)
+        })
 
         if(resMsg.event === getResponseEvent(EVENT_NAME.connectWallet)) {
           mqttClient.removeAllListeners('message')
