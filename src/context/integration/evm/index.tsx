@@ -169,7 +169,7 @@ const EvmProvider: React.FC<React.PropsWithChildren> = ({children}) => {
         }
       )
     }
-  }, [global?.window?.Telegram?.WebApp?.platform])
+  }, [window?.Telegram?.WebApp?.platform])
 
   return (
     <EvmContext.Provider value={{

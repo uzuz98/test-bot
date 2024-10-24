@@ -12,6 +12,7 @@ import { SignTypedDataV3 } from "./_components/SignTypedDataV3";
 import { SendTransaction } from "./_components/SendTransaction";
 import { SwitchChain } from "./_components/SwitchChain";
 import { Encrypt } from "./_components/Encrypt";
+import dynamic from "next/dynamic";
 
 interface IIntegrationProps {
   switchChain: (chainId: string) => void
@@ -70,4 +71,6 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default dynamic(() => Promise.resolve(HomePage), {
+  ssr: false
+})
