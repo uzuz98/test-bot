@@ -145,7 +145,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       const jwtToken = await getToken()
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
       const partner = 'GENERAL'
-      const endpoint = `${process.env.PLASMO_PUBLIC_MQTT_ENDPOINT}?jwt=${jwtToken}&partner=${partner}&platform=${platform}`
+      const endpoint = `wss://superwallet-stg-iot.coin98.dev/mqtt?jwt=${jwtToken}&partner=${partner}&platform=${platform}`
       const user = getTelegramUser()
       threadNameMqttGeneral.current = `AuthenticatedUser_${user.id}_${partner}_${platform}`
 
