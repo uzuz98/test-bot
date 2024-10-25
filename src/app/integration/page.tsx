@@ -13,6 +13,7 @@ import { SendTransaction } from "./_components/SendTransaction";
 import { SwitchChain } from "./_components/SwitchChain";
 import { Encrypt } from "./_components/Encrypt";
 import dynamic from "next/dynamic";
+import { TelegramStar } from "./_components/TelegramStar";
 
 interface IIntegrationProps {
   switchChain: (chainId: string) => void
@@ -46,6 +47,8 @@ const IntegrationScreen: React.FC<IIntegrationProps> = ({
           <SignTypedDataV4 chainId={chainId} />
           <SendTransaction />
           <Encrypt />
+
+          <TelegramStar />
 
           <ModalShowCode />
         </div>

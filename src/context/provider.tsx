@@ -58,7 +58,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
 
       const user = getTelegramUser()
-      let endpoint = `wss://superwallet-stg-iot.coin98.dev/mqtt?`
+      let endpoint = process.env.NEXT_PUBLIC_MQTT_URL!
       const urlString = new URLSearchParams({
         partner,
         platform,
@@ -143,14 +143,20 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
 
   const handleAccountsChanged = async (callback: () => void) => {
     if (!mqttGeneralClient.current?.connected) {
-      console.log("🩲 🩲 => handleAccountsChanged => window.Telegram?.WebApp?.platform:", window.Telegram?.WebApp?.platform)
       const jwtToken = await getToken()
       const platform = window.Telegram?.WebApp?.platform === 'unknown' ? 'macos' : window.Telegram?.WebApp?.platform
       const partner = 'GENERAL'
-      const endpoint = `wss://superwallet-stg-iot.coin98.dev/mqtt?jwt=${jwtToken}&partner=${partner}&platform=${platform}`
+      let endpoint = process.env.NEXT_PUBLIC_MQTT_URL!
+      const urlString = new URLSearchParams({
+        partner,
+        platform,
+        jwt: jwtToken
+      })
+
+      const queryParams = urlString.toString()
+      endpoint += `&${queryParams}`
       const user = getTelegramUser()
       threadNameMqttGeneral.current = `AuthenticatedUser_${user.id}_${partner}_${platform}`
-      console.log("🩲 🩲 => handleAccountsChanged => endpoint:", endpoint)
 
       console.log("🩲 🩲 => handleAccountsChanged => threadNameMqttGeneral.current:", threadNameMqttGeneral.current)
       mqttGeneralClient.current = mqtt.connect(
