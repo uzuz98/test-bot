@@ -32,7 +32,7 @@ const Coin98Provider: React.FC<React.PropsWithChildren<ICoin98Props>> = ({childr
   }
 
   const openTelegram = async (eventType: EVENT_NAME = EVENT_NAME.integration) => {
-    const url = new URL('https://t.me/uzuz_send_message_bot/integration_app')
+    const url = new URL('t.me/super_wallet_staging_bot/integration')
     const paramsURL = new URLSearchParams({
       partner,
       type: eventType,
