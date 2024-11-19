@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { CopyBlock, dracula } from 'react-code-blocks';
 
+const getCode = (code: string) => {
+  return`
+  ${code}
+`
+}
+
 export const ModalShowCode = () => {
   const [code, setCode] = useState('')
 

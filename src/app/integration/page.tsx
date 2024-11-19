@@ -1,8 +1,5 @@
 'use client'
-import React, { ChangeEvent, useState } from "react";
-import Coin98Provider from "@/context/provider";
-import { useCoin98 } from "@/context";
-import { HandleCard } from "./_components/HandleCard";
+import React, { useState } from "react";
 import { BasicActions } from "./_components/BasicActions";
 import { ModalShowCode } from "./_components/ModalShowCode";
 import { PersonalSign } from "./_components/PersonalSign";
@@ -14,6 +11,7 @@ import { SwitchChain } from "./_components/SwitchChain";
 import { Encrypt } from "./_components/Encrypt";
 import dynamic from "next/dynamic";
 import { TelegramStar } from "./_components/TelegramStar";
+import { Coin98Provider } from '~coin98-com/telegram-connect-sdk'
 
 interface IIntegrationProps {
   switchChain: (chainId: string) => void
@@ -28,7 +26,7 @@ const IntegrationScreen: React.FC<IIntegrationProps> = ({
     <div className="bg-main-bg">
       <div className="bg-header bg-cover bg-no-repeat h-60 bg-center">
         <div className="flex flex-col justify-center items-start text-white h-full gap-y-4 px-4">
-          <img className="w-36" src="/coin98-logo.svg"/>
+          <img className="w-36" src="/coin98-logo.svg" />
           <p className=" text-3xl"><span className=" text-main-yellow">Coin98</span> Connect</p>
           <p>E2E Test Dapps</p>
         </div>

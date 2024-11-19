@@ -1,7 +1,6 @@
 import React from "react";
 import { HandleCard } from "./HandleCard";
-import { useCoin98 } from "@/context";
-import { useEvmHandle } from "@/context/integration/evm";
+import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
 
 const codeConnect = `
 const {connect} = useEvmHandle()
@@ -9,13 +8,12 @@ const handleConnect = () => {
   connect()
 }
 `
-
 export const BasicActions = () => {
   const {
     connect,
     address
   } = useEvmHandle()
-
+  
   return (
     <HandleCard
       title='BASIC ACTIONS'

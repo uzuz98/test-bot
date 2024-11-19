@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "~coin98-com/telegram-connect-sdk": [
+        "./telegram-sdk"
       ]
     }
   },

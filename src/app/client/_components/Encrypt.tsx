@@ -1,41 +1,64 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
+import { Coin98SDK, SupportChain } from "~coin98-com/telegram-connect-sdk";
 
 const codeExample = `
-const { getEncryptionKey } = useEvmHandle()
-getEncryptionKey()
+const result = await coin98SDK.handle({
+  method: 'eth_getEncryptionPublicKey',
+  chain: SupportChain.evm
+})
 `
 
 const codeEncrypExample = `
-const { encryptKey } = useEvmHandle()
-encryptKey(<YOUR MESSAGE>)
+const result = await coin98SDK.handle({
+  method: 'encryptKey',
+  data: value,
+  chain: SupportChain.evm
+})
 `
 
 const codeDecryptExample = `
-const {decrypt} = useEvmHandle()
-decrypt(<YOUR DATA ENCRYPTED>)
+const res = await coin98SDK.handle({
+  method: 'eth_decrypt',
+  chain: SupportChain.evm,
+  data: {
+    message: dataEncrypt
+  }
+})
 `
 
-export const Encrypt = () => {
-  const { getEncryptionKey, encryptKey, address, encryptionKey, decryptKey } = useEvmHandle()
+export const Encrypt = ({ address, coin98SDK }: { address: string, coin98SDK: Coin98SDK }) => {
+  // const {getEncryptionKey, encryptKey, encryptionKey, decryptKey} = coin98SDK
   const [data, setData] = useState('')
   const [dataEncrypt, setDataEncrypt] = useState('')
   const [value, setValue] = useState('')
   const [dataDecrypt, setDataDecrypt] = useState('')
 
   const handleGetEncryption = async () => {
-    const result = await getEncryptionKey()
+    const result = await coin98SDK.handle({
+      method: 'eth_getEncryptionPublicKey',
+      chain: SupportChain.evm
+    })
     setData(JSON.stringify(result))
   }
 
   const handleEncryptKey = async () => {
-    const result = encryptKey(value)
+    const result = await coin98SDK.handle({
+      method: 'encryptKey',
+      data: value,
+      chain: SupportChain.evm
+    })
     setDataEncrypt(result)
   }
 
   const handleDecryptKey = async () => {
-    const res = await decryptKey(dataEncrypt)
+    const res = await coin98SDK.handle({
+      method: 'eth_decrypt',
+      chain: SupportChain.evm,
+      data: {
+        message: dataEncrypt
+      }
+    })
 
     setDataDecrypt(res)
   }
@@ -59,7 +82,7 @@ export const Encrypt = () => {
           codeExample: codeEncrypExample,
           description: 'Encrypt',
           handle: handleEncryptKey,
-          disabled: !address || !encryptionKey || !value,
+          disabled: !address || !data || !value,
           result: dataEncrypt
         }
       }}

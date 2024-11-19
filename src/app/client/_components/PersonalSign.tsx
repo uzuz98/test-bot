@@ -1,23 +1,30 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
+import { Coin98SDK, SupportChain } from "~coin98-com/telegram-connect-sdk";
 
 const codeExampleSign = `
-const { personalSign } = useEvmHandle()
-const handleSignPersonal = () => {
-  personalSign({
+const result = await coin98SDK.handle({
+  chain: SupportChain.evm,
+  method: 'personal_sign',
+  data: {
     message: 'This is message'
-  })
-}
+  }
+})
 `
 
-export const PersonalSign = () => {
-  const { personalSign, address } = useEvmHandle()
+export const PersonalSign = ({ address = '', coin98SDK }: {
+  coin98SDK: Coin98SDK,
+  address: string
+}) => {
   const [personalResult, setPersonalResult] = useState('')
 
   const handleSignPersonal = async () => {
-    const result = await personalSign({
-      message: 'This is message'
+    const result = await coin98SDK.handle({
+      chain: SupportChain.evm,
+      method: 'personal_sign',
+      data: {
+        message: 'This is message'
+      }
     })
 
     setPersonalResult(JSON.stringify(result))

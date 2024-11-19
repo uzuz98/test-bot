@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useEvmHandle } from "@/context/integration/evm";
+import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
 
 const codeExampleSign = `
 const { signTypedDataV3, address, chainId } = useEvmHandle()
@@ -45,7 +45,7 @@ const handleSignPersonal = () => {
 }
 `
 
-export const SignTypedDataV3 = ({chainId = ''}) => {
+export const SignTypedDataV3 = ({ chainId = '' }) => {
   const { signTypedDataV3, address } = useEvmHandle()
   const [signTypedDataV3Result, setSignTypedDataV3Result] = useState('')
 

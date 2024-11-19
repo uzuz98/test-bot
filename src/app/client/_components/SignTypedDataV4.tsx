@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { HandleCard } from "./HandleCard";
-import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
+import { Coin98SDK, SupportChain } from "~coin98-com/telegram-connect-sdk";
 
 const codeExampleSign = `
-const { signTypedDataV4, address, chainId } = useEvmHandle()
-const handleSignPersonal = () => {
-  signTypedDataV4({
+await coin98SDK.handle({
+  method: 'eth_signTypedDataV4',
+  chain: SupportChain.evm,
+  data: {
     domain: {
-      chainId: Number(chainId),
+      chainId: Number(coin98SDK.chainId),
       name: 'Ether Mail',
       verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
       version: '1',
@@ -56,19 +57,21 @@ const handleSignPersonal = () => {
         { name: 'wallets', type: 'address[]' },
       ],
     }
-  })
-}
+  }
+})
 `
 
-export const SignTypedDataV4 = ({ chainId = '' }) => {
-  const { signTypedDataV4, address } = useEvmHandle()
+export const SignTypedDataV4 = ({ address = '', coin98SDK }: { address: string, coin98SDK: Coin98SDK }) => {
+  // const { signTypedDataV4, address } = useEvmHandle()
   const [signTypedDataV4Result, setSignTypedDataV4Result] = useState('')
 
-  const handleSignPersonal = async () => {
-    try {
-      const result = await signTypedDataV4({
+  const handleSignTypedV4 = async () => {
+    const result = await coin98SDK.handle({
+      method: 'eth_signTypedDataV4',
+      chain: SupportChain.evm,
+      data: {
         domain: {
-          chainId: Number(chainId),
+          chainId: Number(coin98SDK.chainId),
           name: 'Ether Mail',
           verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
           version: '1',
@@ -117,13 +120,10 @@ export const SignTypedDataV4 = ({ chainId = '' }) => {
             { name: 'wallets', type: 'address[]' },
           ],
         }
-      })
+      }
+    })
 
-      setSignTypedDataV4Result(JSON.stringify(result))
-    } catch (error) {
-      console.log("🩲 🩲 => handleSignPersonal => error:", error)
-
-    }
+    setSignTypedDataV4Result(JSON.stringify(result))
   }
 
   return (
@@ -131,7 +131,7 @@ export const SignTypedDataV4 = ({ chainId = '' }) => {
       title="SIGN TYPED DATA V4"
       btnA={{
         description: 'Sign',
-        handle: handleSignPersonal,
+        handle: handleSignTypedV4,
         codeExample: codeExampleSign,
         result: signTypedDataV4Result,
         disabled: !address

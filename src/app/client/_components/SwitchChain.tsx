@@ -1,9 +1,10 @@
-import { useEvmHandle } from "~coin98-com/telegram-connect-sdk";
+import { Coin98SDK } from "~coin98-com/telegram-connect-sdk";
 import React, { useMemo, useState } from "react";
 
 interface IProps {
   chainId: string
   switchChain: (chainId: string) => void
+  address: string
 }
 
 const CHAIN_LIST = [
@@ -24,8 +25,8 @@ const CHAIN_LIST = [
   }
 ]
 
-export const SwitchChain: React.FC<IProps> = ({ chainId, switchChain }) => {
-  const { address } = useEvmHandle()
+export const SwitchChain: React.FC<IProps> = ({ chainId, switchChain, address }) => {
+  // const { address } = useEvmHandle()
   const [isCollapse, setIsCollapse] = useState(true)
   // if(!address) return null
 

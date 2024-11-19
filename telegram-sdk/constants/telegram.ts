@@ -1,0 +1,1 @@
+export const INTEGRATION_MINIAPP_URL = 'https://t.me/coin98_telegram_wallet_bot/coin98_wallet_integration_bot'
